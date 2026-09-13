@@ -345,7 +345,7 @@ import '../styles/global.css';
       <!-- Jukebox Player Bar: Floating at upper right -->
       <div
         id="jukebox-pill"
-        class="absolute top-14 right-4 z-20 flex items-center gap-2 px-3 py-1.5 rounded-full border border-lime-500/30 bg-[#0e1b09]/90 backdrop-blur-md shadow-xl pointer-events-auto transition-all"
+        class="absolute top-13 right-3 sm:right-4 z-20 flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 rounded-full border border-lime-500/30 bg-[#0e1b09]/90 backdrop-blur-md shadow-xl pointer-events-auto transition-all"
       >
         <div class="text-[10px] text-right leading-tight pr-1.5 border-r border-zinc-800">
           <span class="text-[8px] text-amber-400 font-bold tracking-widest block">MUSIC</span>
@@ -437,7 +437,7 @@ import '../styles/global.css';
           icon: '🥃',
           drainRate: 0.22,
           widthFactor: 0.62,       // Visibly smaller/narrower cutting tumbler
-          topRimFraction: 0.25,    // Visibly shorter height (starts 25% from top)
+          topRimFraction: 0.26,    // Visibly shorter height (starts 26% from top)
           bottomPad: 46,
           previewScale: 'scale(0.85)',
         },
@@ -447,7 +447,7 @@ import '../styles/global.css';
           icon: '🥛',
           drainRate: 0.17,
           widthFactor: 0.80,       // Standard cutting glass
-          topRimFraction: 0.14,    // Standard top rim (14% from top)
+          topRimFraction: 0.19,    // Standard top rim (starts 19% from top)
           bottomPad: 58,
           previewScale: 'scale(1.0)',
         },
@@ -457,7 +457,7 @@ import '../styles/global.css';
           icon: '🍹',
           drainRate: 0.14,
           widthFactor: 0.94,       // Wide, spacious, tall glass
-          topRimFraction: 0.07,    // Tall glass (starts 7% from top)
+          topRimFraction: 0.135,   // Large glass: starts safely below HUD elements
           bottomPad: 68,
           previewScale: 'scale(1.14)',
         },
@@ -1238,7 +1238,7 @@ import '../styles/global.css';
           this.glassBx1 = (w - bottomW) / 2;
           this.glassBx2 = w - this.glassBx1;
 
-          this.topRimY = Math.round(h * cfg.topRimFraction);
+          this.topRimY = Math.max(108, Math.round(h * cfg.topRimFraction));
           this.glassBottomPad = cfg.bottomPad;
 
           this.initNodes();
