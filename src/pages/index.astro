@@ -304,68 +304,73 @@ import '../styles/global.css';
       <!-- Background Canvas: Full screen edge-to-edge -->
       <canvas id="liquid-physics-canvas" class="absolute inset-0 w-full h-full block cursor-pointer"></canvas>
 
-      <!-- Top HUD Bar -->
-      <header class="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-4 pt-3.5 pb-2 pointer-events-auto">
-        <button
-          id="back-to-menu-btn"
-          type="button"
-          class="px-3.5 py-1.5 rounded-full border border-lime-500/40 bg-[#0e1b09]/85 backdrop-blur-md text-lime-400 font-display font-bold text-xs tracking-wider cursor-pointer active:scale-95 transition-all shadow-md flex items-center gap-1.5"
-        >
-          <span>🌾</span>
-          <span>GANNA BAAR</span>
-        </button>
+      <!-- Top HUD Bar: Multi-row clean flow container (Prevents any overlap between status buttons & jukebox pill) -->
+      <header class="absolute top-0 left-0 right-0 z-20 px-3.5 pt-3 pointer-events-auto flex flex-col gap-1.5">
+        <!-- Row 1: Back to Menu & Status Actions -->
+        <div class="w-full flex items-center justify-between">
+          <button
+            id="back-to-menu-btn"
+            type="button"
+            class="px-3 py-1.5 rounded-full border border-lime-500/40 bg-[#0e1b09]/90 backdrop-blur-md text-lime-400 font-display font-bold text-xs tracking-wider cursor-pointer active:scale-95 transition-all shadow-md flex items-center gap-1.5"
+          >
+            <span>🌾</span>
+            <span>GANNA BAAR</span>
+          </button>
 
-        <div class="flex items-center gap-2">
-          <!-- Sips Metric Pill -->
-          <div class="px-3 py-1.5 rounded-full border border-lime-500/30 bg-[#0e1b09]/85 backdrop-blur-md text-lime-300 font-display font-bold text-xs flex items-center gap-1.5 shadow-md">
-            <span>🥤</span>
-            <span id="sip-count-badge">100%</span>
+          <div class="flex items-center gap-1.5">
+            <!-- Sips Metric Pill -->
+            <div class="px-2.5 py-1 rounded-full border border-lime-500/30 bg-[#0e1b09]/90 backdrop-blur-md text-lime-300 font-display font-bold text-xs flex items-center gap-1 shadow-md">
+              <span>🥤</span>
+              <span id="sip-count-badge">100%</span>
+            </div>
+            <!-- Sound Toggle -->
+            <button
+              id="audio-toggle-btn"
+              type="button"
+              class="w-7 h-7 rounded-full border border-zinc-700 bg-[#0e1b09]/90 backdrop-blur-md flex items-center justify-center text-xs cursor-pointer active:scale-95 transition-all"
+              title="Mute / Unmute Sound"
+            >
+              <span id="sound-icon">🔊</span>
+            </button>
+            <!-- Restart Reset Button -->
+            <button
+              id="reset-btn"
+              type="button"
+              class="w-7 h-7 rounded-full border border-zinc-700 bg-[#0e1b09]/90 backdrop-blur-md flex items-center justify-center text-xs text-zinc-300 font-bold cursor-pointer active:scale-95 transition-all"
+              title="Refill Glass"
+            >
+              ↺
+            </button>
           </div>
-          <!-- Sound Toggle -->
-          <button
-            id="audio-toggle-btn"
-            type="button"
-            class="w-8 h-8 rounded-full border border-zinc-700 bg-[#0e1b09]/85 backdrop-blur-md flex items-center justify-center text-sm cursor-pointer active:scale-95 transition-all"
-            title="Mute / Unmute Sound"
+        </div>
+
+        <!-- Row 2: Jukebox Music Player (Flows below Row 1 without any overlapping) -->
+        <div class="w-full flex justify-end">
+          <div
+            id="jukebox-pill"
+            class="flex items-center gap-2 px-2.5 py-1 rounded-full border border-lime-500/30 bg-[#0e1b09]/90 backdrop-blur-md shadow-xl pointer-events-auto transition-all"
           >
-            <span id="sound-icon">🔊</span>
-          </button>
-          <!-- Restart Reset Button -->
-          <button
-            id="reset-btn"
-            type="button"
-            class="w-8 h-8 rounded-full border border-zinc-700 bg-[#0e1b09]/85 backdrop-blur-md flex items-center justify-center text-sm text-zinc-300 font-bold cursor-pointer active:scale-95 transition-all"
-            title="Refill Glass"
-          >
-            ↺
-          </button>
+            <div class="text-[10px] text-right leading-tight pr-1.5 border-r border-zinc-800">
+              <span class="text-[8px] text-amber-400 font-bold tracking-widest block">MUSIC</span>
+              <span id="jb-track-name" class="text-zinc-200 font-medium block max-w-[80px] truncate">Ganne Ka Juice</span>
+            </div>
+            <!-- Play / Pause -->
+            <button id="jb-play-pause-btn" type="button" class="text-xs hover:scale-110 active:scale-95 transition-all cursor-pointer p-0.5" title="Play / Pause">
+              <span id="jb-play-icon">⏸️</span>
+            </button>
+            <!-- Stop -->
+            <button id="jb-stop-btn" type="button" class="text-xs hover:scale-110 active:scale-95 transition-all cursor-pointer p-0.5" title="Stop (Reset to Start)">
+              <span>⏹️</span>
+            </button>
+            <!-- Next Track -->
+            <button id="jb-next-btn" type="button" class="text-xs hover:scale-110 active:scale-95 transition-all cursor-pointer p-0.5" title="Switch to Next Song">
+              <span>🔄</span>
+            </button>
+            <!-- Spinning Disc -->
+            <span id="jb-disc-icon" class="text-sm animate-spin" style="animation-duration: 4s;">💿</span>
+          </div>
         </div>
       </header>
-
-      <!-- Jukebox Player Bar: Floating at upper right -->
-      <div
-        id="jukebox-pill"
-        class="absolute top-13 right-3 sm:right-4 z-20 flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 rounded-full border border-lime-500/30 bg-[#0e1b09]/90 backdrop-blur-md shadow-xl pointer-events-auto transition-all"
-      >
-        <div class="text-[10px] text-right leading-tight pr-1.5 border-r border-zinc-800">
-          <span class="text-[8px] text-amber-400 font-bold tracking-widest block">MUSIC</span>
-          <span id="jb-track-name" class="text-zinc-200 font-medium block max-w-[80px] truncate">Ganne Ka Juice</span>
-        </div>
-        <!-- Play / Pause -->
-        <button id="jb-play-pause-btn" type="button" class="text-xs hover:scale-110 active:scale-95 transition-all cursor-pointer p-0.5" title="Play / Pause">
-          <span id="jb-play-icon">⏸️</span>
-        </button>
-        <!-- Stop -->
-        <button id="jb-stop-btn" type="button" class="text-xs hover:scale-110 active:scale-95 transition-all cursor-pointer p-0.5" title="Stop (Reset to Start)">
-          <span>⏹️</span>
-        </button>
-        <!-- Next Track -->
-        <button id="jb-next-btn" type="button" class="text-xs hover:scale-110 active:scale-95 transition-all cursor-pointer p-0.5" title="Switch to Next Song">
-          <span>🔄</span>
-        </button>
-        <!-- Spinning Disc -->
-        <span id="jb-disc-icon" class="text-sm animate-spin" style="animation-duration: 4s;">💿</span>
-      </div>
 
       <!-- Pouring Droplets Stream when tilted past mouth threshold -->
       <div id="pour-stream" class="absolute top-28 left-8 pointer-events-none opacity-0 transition-opacity duration-150 z-30">
