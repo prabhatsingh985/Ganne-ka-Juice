@@ -1,0 +1,133 @@
+---
+// KesarModal.astro - Roadside Honor System Unlock Modal
+// JOKE UI ELEMENT: There is no real payment gateway, backend, or financial tracking.
+// This is a playful desi tapri novelty unlock mechanism.
+---
+
+<div
+  id="kesar-modal"
+  class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm hidden select-none transition-opacity duration-200"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="modal-title"
+>
+  <!-- Modal Card -->
+  <div class="relative w-full max-w-sm bg-cream rounded-3xl border-4 border-rust-border shadow-desi-lg p-6 flex flex-col items-center text-center animate-pulse-subtle">
+    <!-- Close button -->
+    <button
+      id="close-kesar-modal"
+      type="button"
+      class="absolute top-3 right-3 w-9 h-9 rounded-full bg-cream-dark hover:bg-yellow-200 border-2 border-rust text-rust-dark font-display font-bold text-lg flex items-center justify-center transition-transform active:scale-90"
+      aria-label="Close modal"
+    >
+      ✕
+    </button>
+
+    <!-- Badge -->
+    <div class="px-3 py-1 bg-kesar text-white font-display font-bold text-xs uppercase tracking-wider rounded-full border-2 border-rust shadow-desi-sm mb-3">
+      👑 Shahi Tapri Khazana
+    </div>
+
+    <!-- Title -->
+    <h3 id="modal-title" class="font-display font-black text-xl sm:text-2xl text-rust-dark leading-tight mb-2">
+      GANNA BAAR EXCLUSIVE • ₹10 SHAGUN
+    </h3>
+
+    <!-- Copy -->
+    <p class="font-body text-sm text-rust leading-relaxed mb-4">
+      Yeh kesar wala ganna khaas khet se aaya hai — kolhu bhaiya ko <span class="font-bold text-kesar-dark">₹10 ka shagun</span> de do 💛
+    </p>
+
+    <!-- Faux Styled SVG UPI QR Code (Humorous Roadside QR Placeholder) -->
+    <div class="relative bg-white p-3 rounded-2xl border-3 border-rust shadow-desi-sm mb-4 flex flex-col items-center">
+      <svg viewBox="0 0 160 160" class="w-36 h-36" xmlns="http://www.w3.org/2000/svg">
+        <!-- Background -->
+        <rect width="160" height="160" fill="#FFFFFF" />
+
+        <!-- Outer Finder Patterns (Top-Left) -->
+        <rect x="10" y="10" width="40" height="40" rx="6" fill="#452610" />
+        <rect x="18" y="18" width="24" height="24" rx="3" fill="#FFFFFF" />
+        <rect x="24" y="24" width="12" height="12" rx="2" fill="#5B8C3A" />
+
+        <!-- Outer Finder Patterns (Top-Right) -->
+        <rect x="110" y="10" width="40" height="40" rx="6" fill="#452610" />
+        <rect x="118" y="18" width="24" height="24" rx="3" fill="#FFFFFF" />
+        <rect x="124" y="24" width="12" height="12" rx="2" fill="#5B8C3A" />
+
+        <!-- Outer Finder Patterns (Bottom-Left) -->
+        <rect x="10" y="110" width="40" height="40" rx="6" fill="#452610" />
+        <rect x="18" y="118" width="24" height="24" rx="3" fill="#FFFFFF" />
+        <rect x="24" y="124" width="12" height="12" rx="2" fill="#5B8C3A" />
+
+        <!-- Stylized QR Matrix Dots -->
+        <g fill="#7A4B2A">
+          <rect x="60" y="12" width="8" height="8" rx="2" />
+          <rect x="76" y="12" width="8" height="8" rx="2" />
+          <rect x="92" y="12" width="8" height="8" rx="2" />
+
+          <rect x="60" y="28" width="8" height="8" rx="2" />
+          <rect x="84" y="28" width="8" height="8" rx="2" />
+
+          <rect x="60" y="44" width="8" height="8" rx="2" />
+          <rect x="76" y="44" width="8" height="8" rx="2" />
+          <rect x="92" y="44" width="8" height="8" rx="2" />
+
+          <rect x="12" y="60" width="8" height="8" rx="2" />
+          <rect x="28" y="60" width="8" height="8" rx="2" />
+          <rect x="44" y="60" width="8" height="8" rx="2" />
+          <rect x="110" y="60" width="8" height="8" rx="2" />
+          <rect x="138" y="60" width="8" height="8" rx="2" />
+
+          <rect x="12" y="76" width="8" height="8" rx="2" />
+          <rect x="36" y="76" width="8" height="8" rx="2" />
+          <rect x="120" y="76" width="8" height="8" rx="2" />
+          <rect x="138" y="76" width="8" height="8" rx="2" />
+
+          <rect x="12" y="92" width="8" height="8" rx="2" />
+          <rect x="28" y="92" width="8" height="8" rx="2" />
+          <rect x="44" y="92" width="8" height="8" rx="2" />
+          <rect x="110" y="92" width="8" height="8" rx="2" />
+          <rect x="128" y="92" width="8" height="8" rx="2" />
+
+          <rect x="60" y="110" width="8" height="8" rx="2" />
+          <rect x="76" y="110" width="8" height="8" rx="2" />
+          <rect x="92" y="110" width="8" height="8" rx="2" />
+
+          <rect x="60" y="126" width="8" height="8" rx="2" />
+          <rect x="84" y="126" width="8" height="8" rx="2" />
+          <rect x="138" y="126" width="8" height="8" rx="2" />
+
+          <rect x="60" y="142" width="8" height="8" rx="2" />
+          <rect x="76" y="142" width="8" height="8" rx="2" />
+          <rect x="92" y="142" width="8" height="8" rx="2" />
+          <rect x="110" y="142" width="8" height="8" rx="2" />
+          <rect x="126" y="142" width="8" height="8" rx="2" />
+        </g>
+
+        <!-- Center Desi Sugarcane Icon Badge -->
+        <circle cx="80" cy="80" r="18" fill="#FDF6E3" stroke="#7A4B2A" stroke-width="2.5" />
+        <text x="80" y="86" font-family="'Baloo 2', sans-serif" font-size="14" font-weight="bold" fill="#E8B923" text-anchor="middle">
+          ₹10
+        </text>
+      </svg>
+      <span class="text-[11px] font-display font-semibold text-rust-light mt-1">
+        Scan karo ya dil se bhejo 💸
+      </span>
+    </div>
+
+    <!-- Unlock CTA Button -->
+    <button
+      id="unlock-kesar-btn"
+      type="button"
+      class="btn-desi w-full py-3 px-4 bg-gradient-to-r from-kesar to-yellow-500 hover:from-yellow-500 hover:to-kesar text-white text-base font-display font-bold mb-3 flex items-center justify-center gap-2 border-3 border-rust-border shadow-desi"
+    >
+      <span>Maine Pay Kar Diya Hai!</span>
+      <span class="text-xl">🤞</span>
+    </button>
+
+    <!-- Honor System Disclaimer -->
+    <p class="text-[11px] font-body text-rust-light/90 italic leading-snug">
+      Honor system — koi real payment ya tracking nahi, bas maze ke liye 😄.
+    </p>
+  </div>
+</div>

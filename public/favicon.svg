@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="favJuice" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFE26A" />
+      <stop offset="100%" stop-color="#E8B923" />
+    </linearGradient>
+    <linearGradient id="favCane" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#76B34A" />
+      <stop offset="100%" stop-color="#3E6126" />
+    </linearGradient>
+  </defs>
+  <!-- Background Circle -->
+  <circle cx="32" cy="32" r="30" fill="#FDF6E3" stroke="#7A4B2A" stroke-width="3" />
+  <!-- Sugarcane stalk in background -->
+  <rect x="36" y="8" width="8" height="42" rx="3" fill="url(#favCane)" stroke="#294318" stroke-width="1.5" transform="rotate(18 40 29)" />
+  <!-- Cutting Glass Tumbler -->
+  <polygon points="18,18 46,18 41,54 23,54" fill="#FFFFFF" opacity="0.6" stroke="#7A4B2A" stroke-width="2.5" />
+  <!-- Juice in glass -->
+  <polygon points="20,28 44,28 40,52 24,52" fill="url(#favJuice)" />
+  <!-- Foam -->
+  <ellipse cx="32" cy="28" rx="12" ry="3" fill="#FFFBEB" />
+  <!-- Lemon slice on rim -->
+  <circle cx="20" cy="20" r="6" fill="#F6E05E" stroke="#D69E2E" stroke-width="1.5" />
+</svg>

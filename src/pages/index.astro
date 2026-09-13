@@ -1,0 +1,1659 @@
+---
+// Ganna Baar (गन्ने का रस) - Ultra-Minimalist Desi Tapri Web Toy
+// Full viewport drinking glass with real-time 2D fluid wave & sloshing physics,
+// true multi-point wave surface tension, inertia, and mouth-tilt sensor detection.
+import '../styles/global.css';
+---
+
+<!doctype html>
+<html lang="hi" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- SEO & Metadata -->
+    <title>गन्ने का रस — GANNA BAAR | The Online Ganna Break</title>
+    <meta
+      name="description"
+      content="The Online Ganna Break ☀️ — Minimalist desi tapri web toy with real fluid physics. Tilt your phone to sip fresh sugarcane juice!"
+    />
+    <meta name="theme-color" content="#070e04" />
+
+    <!-- Open Graph Tags -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="गन्ने का रस — GANNA BAAR" />
+    <meta
+      property="og:description"
+      content="The Online Ganna Break ☀️ — Real fluid physics. Phone ko tilt karo aur fresh ganne ka ras piyo!"
+    />
+    <meta property="og:image" content="/og.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="गन्ने का रस — GANNA BAAR" />
+    <meta name="twitter:image" content="/og.png" />
+
+    <!-- Google Fonts: Baloo 2 + Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="min-h-screen bg-[#070e04] text-zinc-100 flex flex-col justify-between items-center relative select-none overflow-x-hidden">
+    <!-- Ambient Sugarcane Aura -->
+    <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[380px] sm:w-[500px] h-[380px] sm:h-[500px] bg-gradient-to-tr from-lime-600/20 via-yellow-400/15 to-transparent rounded-full blur-3xl pointer-events-none -z-10"></div>
+
+    <!-- Quick Toast Notification -->
+    <div
+      id="app-toast"
+      class="fixed top-5 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-full bg-zinc-950 text-lime-300 font-display text-xs font-bold border border-lime-500/40 opacity-0 pointer-events-none transition-all duration-300 shadow-xl"
+    >
+      Link Copied! 🌾
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- REAL-TIME SENSOR-DEBUG PANEL (REQUIRED FOR VERIFICATION) -->
+    <!-- ========================================================= -->
+    <aside
+      id="sensor-debug-panel"
+      class="fixed top-2 left-2 right-2 sm:right-auto sm:left-4 sm:w-84 z-50 bg-[#091206]/95 border-2 border-lime-500/80 rounded-2xl p-3 text-xs font-mono shadow-2xl backdrop-blur-md select-text transition-all"
+    >
+      <div class="flex items-center justify-between border-b border-lime-500/30 pb-1.5 mb-2">
+        <div class="flex items-center gap-1.5 font-bold text-lime-400">
+          <span class="animate-pulse">📡</span>
+          <span>SENSOR DEBUGGER</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span id="dbg-pulse-dot" class="w-2 h-2 rounded-full bg-zinc-600"></span>
+          <button id="debug-toggle-btn" type="button" class="text-zinc-400 hover:text-white px-2 py-0.5 rounded bg-zinc-800 text-[10px] cursor-pointer">
+            Hide
+          </button>
+        </div>
+      </div>
+
+      <div id="debug-body" class="space-y-1.5 text-zinc-300">
+        <!-- Status Row -->
+        <div class="flex justify-between items-center bg-black/50 px-2 py-1 rounded-lg">
+          <span class="text-zinc-400 text-[11px]">Sensor Status:</span>
+          <span id="dbg-status" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
+            CHECKING...
+          </span>
+        </div>
+
+        <div class="flex justify-between items-center text-[10px] px-1">
+          <span class="text-zinc-400">Source API:</span>
+          <span id="dbg-source" class="text-zinc-200 font-bold">none</span>
+        </div>
+
+        <!-- Raw Alpha / Beta / Gamma -->
+        <div class="grid grid-cols-3 gap-1 text-center bg-black/60 p-1.5 rounded-lg border border-zinc-800">
+          <div>
+            <div class="text-[9px] text-zinc-500 uppercase">alpha</div>
+            <div id="dbg-alpha" class="font-bold text-zinc-200 text-xs">--</div>
+          </div>
+          <div>
+            <div class="text-[9px] text-zinc-500 uppercase">beta</div>
+            <div id="dbg-beta" class="font-bold text-zinc-200 text-xs">--</div>
+          </div>
+          <div>
+            <div class="text-[9px] text-zinc-500 uppercase">gamma</div>
+            <div id="dbg-gamma" class="font-bold text-zinc-200 text-xs">--</div>
+          </div>
+        </div>
+
+        <!-- Calculated Tilt X & Y -->
+        <div class="grid grid-cols-2 gap-1.5 bg-black/60 p-1.5 rounded-lg border border-zinc-800">
+          <div>
+            <span class="text-[9px] text-zinc-400 block">Calc Tilt X (Roll):</span>
+            <span id="dbg-tilt-x" class="text-sm font-bold text-lime-400">0.0°</span>
+          </div>
+          <div>
+            <span class="text-[9px] text-zinc-400 block">Calc Tilt Y (Pitch):</span>
+            <span id="dbg-tilt-y" class="text-sm font-bold text-amber-400">0.0°</span>
+          </div>
+        </div>
+
+        <!-- Gravity X & Y -->
+        <div class="grid grid-cols-2 gap-1.5 bg-black/60 p-1.5 rounded-lg border border-zinc-800">
+          <div>
+            <span class="text-[9px] text-zinc-400 block">Gravity X (m/s²):</span>
+            <span id="dbg-grav-x" class="text-xs font-bold text-zinc-200">--</span>
+          </div>
+          <div>
+            <span class="text-[9px] text-zinc-400 block">Gravity Y (m/s²):</span>
+            <span id="dbg-grav-y" class="text-xs font-bold text-zinc-200">--</span>
+          </div>
+        </div>
+
+        <!-- Visual Tilt Meter Bar -->
+        <div class="bg-black/60 p-1.5 rounded-lg border border-zinc-800">
+          <div class="flex justify-between text-[8px] text-zinc-500 mb-0.5">
+            <span>◀ TILT LEFT 30°</span>
+            <span>CENTER</span>
+            <span>TILT RIGHT 30° ▶</span>
+          </div>
+          <div class="relative w-full h-2.5 bg-zinc-800 rounded-full overflow-hidden">
+            <div class="absolute top-0 bottom-0 left-1/2 w-0.5 bg-zinc-500 -translate-x-1/2"></div>
+            <div id="dbg-meter-bar" class="absolute top-0 bottom-0 w-3 bg-lime-400 rounded-full transition-all -translate-x-1/2" style="left: 50%;"></div>
+          </div>
+        </div>
+
+        <!-- Timestamp & Event Counter -->
+        <div class="flex justify-between items-center text-[10px] text-zinc-500 px-1 pt-0.5">
+          <span>Last Update:</span>
+          <span id="dbg-timestamp" class="text-zinc-400 font-mono">waiting...</span>
+        </div>
+
+        <!-- User Permission Button -->
+        <button
+          id="dbg-perm-btn"
+          type="button"
+          class="w-full mt-1.5 py-2 px-3 rounded-xl bg-lime-500 hover:bg-lime-400 text-black font-display font-bold text-xs shadow-lg transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"
+        >
+          <span>⚡</span>
+          <span id="dbg-perm-btn-text">Request / Enable Sensor Access</span>
+        </button>
+
+        <!-- Warning message if non-secure context in Chrome Android -->
+        <div id="dbg-insecure-alert" class="hidden mt-1 p-1.5 rounded bg-rose-950/80 border border-rose-500/50 text-[10px] text-rose-300 leading-tight">
+          ⚠️ <strong>Non-Secure Origin:</strong> Chrome on Android disables motion sensors over plain <code>http://LAN-IP</code>. Open via HTTPS or localhost to enable.
+        </div>
+      </div>
+    </aside>
+
+    <!-- ========================================================= -->
+    <!-- VIEW 1: MINIMALIST MENU SELECTION SCREEN (CHAI BAAR STYLE)-->
+    <!-- ========================================================= -->
+    <main id="view-menu" class="w-full max-w-md flex flex-col items-center text-center my-auto px-4 py-6 transition-all duration-300 z-10">
+      <!-- Top Navigation Header inside Menu -->
+      <div class="w-full flex justify-between items-center mb-6">
+        <div class="inline-block px-3.5 py-1 rounded-full border border-lime-500/30 text-lime-400 text-[10px] sm:text-[11px] font-display font-bold uppercase tracking-widest bg-lime-950/30">
+          DESI TAPRI EXPERIENCE
+        </div>
+
+        <!-- Lo-Fi Ambient Player -->
+        <button
+          id="lofi-toggle-btn"
+          type="button"
+          class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/40 hover:bg-black/60 border border-white/10 text-white text-xs font-mono backdrop-blur-md transition-all active:scale-95 cursor-pointer shadow-lg"
+          aria-label="Toggle Ambient Audio"
+        >
+          <span class="text-zinc-500 text-[10px]">⏭️</span>
+          <span id="lofi-icon" class="text-lime-400 text-xs">▶️</span>
+          <span id="lofi-text" class="text-[11px] font-medium text-zinc-200">Ganna Tapri – Later</span>
+        </button>
+      </div>
+
+      <!-- Typography Header -->
+      <h1 class="font-display font-black text-4xl sm:text-5xl text-transparent bg-clip-text bg-gradient-to-r from-lime-300 via-yellow-300 to-amber-400 leading-none mb-1">
+        गन्ने का रस
+      </h1>
+      <h2 class="font-display font-black text-xl sm:text-2xl text-white tracking-widest mt-1">
+        GANNA BAAR
+      </h2>
+      <p class="font-body text-xs sm:text-sm text-zinc-400 mt-1 font-light tracking-wide">
+        The Online Ganna Break ☀️
+      </p>
+
+      <!-- Preview Static Cutting Glass Graphic -->
+      <div class="relative w-40 sm:w-48 aspect-[3/4] my-4 flex items-center justify-center">
+        <div class="absolute -top-2 text-lg animate-float-slow opacity-80">🍋</div>
+        <div class="absolute -bottom-1 -left-2 text-base animate-float-slow opacity-80" style="animation-delay: 1.5s;">🧊</div>
+
+        <svg viewBox="0 0 200 280" class="w-full h-full drop-shadow-2xl overflow-visible">
+          <defs>
+            <clipPath id="previewGlassClip">
+              <polygon points="40,25 160,25 146,252 54,252" />
+            </clipPath>
+            <linearGradient id="previewJuiceGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#E4F78F" />
+              <stop offset="35%" stop-color="#C5E038" />
+              <stop offset="70%" stop-color="#99B816" />
+              <stop offset="100%" stop-color="#556E0B" />
+            </linearGradient>
+            <linearGradient id="previewKesarGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#FFE082" />
+              <stop offset="40%" stop-color="#FFB300" />
+              <stop offset="80%" stop-color="#E65100" />
+              <stop offset="100%" stop-color="#9C2706" />
+            </linearGradient>
+            <linearGradient id="previewFoam" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#FCFFE7" stop-opacity="0.95" />
+              <stop offset="50%" stop-color="#F4FCC2" stop-opacity="0.98" />
+              <stop offset="100%" stop-color="#FCFFE7" stop-opacity="0.95" />
+            </linearGradient>
+          </defs>
+          <ellipse cx="100" cy="258" rx="50" ry="8" fill="rgba(0,0,0,0.6)" />
+          <polygon points="38,20 162,20 148,255 52,255" fill="rgba(255, 255, 255, 0.08)" stroke="rgba(255, 255, 255, 0.25)" stroke-width="2.5" />
+          <polygon points="52,242 148,242 146,254 54,254" fill="rgba(255, 255, 255, 0.25)" />
+          <g clip-path="url(#previewGlassClip)">
+            <rect id="preview-liquid" x="0" y="35" width="200" height="225" fill="url(#previewJuiceGrad)" />
+            <circle cx="70" cy="160" r="2.5" fill="#FCFFE7" opacity="0.6" class="animate-bounce" />
+            <circle cx="130" cy="180" r="3" fill="#FCFFE7" opacity="0.6" class="animate-bounce" />
+            <polygon points="65,45 80,38 94,46 78,53" fill="#FFFFFF" opacity="0.75" />
+            <polygon points="110,48 124,42 136,49 122,55" fill="#FFFFFF" opacity="0.75" />
+            <g id="preview-mint" class="hidden">
+              <circle cx="95" cy="45" r="7" fill="#48BB78" opacity="0.9" />
+            </g>
+            <g id="preview-kesar" class="hidden">
+              <line x1="80" y1="40" x2="110" y2="46" stroke="#DC2626" stroke-width="2" />
+            </g>
+            <ellipse cx="100" cy="35" rx="60" ry="10" fill="url(#previewFoam)" />
+            <g stroke="rgba(255, 255, 255, 0.2)" stroke-width="2.5" stroke-linecap="round">
+              <line x1="62" y1="35" x2="70" y2="235" />
+              <line x1="82" y1="35" x2="86" y2="235" />
+              <line x1="100" y1="35" x2="100" y2="235" />
+              <line x1="118" y1="35" x2="114" y2="235" />
+              <line x1="138" y1="35" x2="130" y2="235" />
+            </g>
+          </g>
+          <ellipse cx="100" cy="22" rx="62" ry="9" fill="none" stroke="rgba(255, 255, 255, 0.4)" stroke-width="2.5" />
+        </svg>
+      </div>
+
+      <!-- Tapri Menu Label -->
+      <span class="text-[11px] font-display font-bold text-zinc-500 uppercase tracking-widest mb-2.5">
+        TAPRI MENU
+      </span>
+
+      <!-- Horizontal Menu Cards -->
+      <div class="w-full grid grid-cols-3 gap-2 mb-5" id="tapri-menu-pills">
+        <!-- Card 1: Saada Ras -->
+        <button
+          type="button"
+          data-flavor="saada"
+          class="tapri-pill p-3 rounded-2xl border-2 border-lime-500 bg-lime-950/40 text-left transition-all cursor-pointer shadow-md glow-green"
+        >
+          <span class="text-xl block mb-1">🌾</span>
+          <span class="font-display font-bold text-xs sm:text-sm text-white block leading-tight">
+            Saada Ras
+          </span>
+          <span class="text-[10px] font-body text-zinc-400 block leading-tight mt-0.5">
+            100% pure mithaas
+          </span>
+        </button>
+
+        <!-- Card 2: Nimbu Masala -->
+        <button
+          type="button"
+          data-flavor="nimbu"
+          class="tapri-pill p-3 rounded-2xl border-2 border-zinc-800 bg-zinc-900/40 hover:bg-zinc-900/70 text-left transition-all cursor-pointer shadow-sm"
+        >
+          <span class="text-xl block mb-1">🍋</span>
+          <span class="font-display font-bold text-xs sm:text-sm text-white block leading-tight">
+            Nimbu Masala
+          </span>
+          <span class="text-[10px] font-body text-zinc-400 block leading-tight mt-0.5">
+            Mint & Kala Namak
+          </span>
+        </button>
+
+        <!-- Card 3: Shahi Kesar -->
+        <button
+          type="button"
+          data-flavor="kesar"
+          class="tapri-pill p-3 rounded-2xl border-2 border-zinc-800 bg-zinc-900/40 hover:bg-zinc-900/70 text-left transition-all cursor-pointer shadow-sm"
+        >
+          <span id="kesar-icon" class="text-xl block mb-1">🔒</span>
+          <span class="font-display font-bold text-xs sm:text-sm text-white block leading-tight">
+            Shahi Kesar
+          </span>
+          <span id="kesar-desc" class="text-[10px] font-body text-zinc-400 block leading-tight mt-0.5">
+            ₹10 Shagun special
+          </span>
+        </button>
+      </div>
+
+      <!-- Single Big CTA Button -->
+      <button
+        id="open-glass-btn"
+        type="button"
+        class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-lime-600 via-emerald-600 to-amber-500 hover:from-lime-500 hover:to-amber-400 text-white font-display font-bold text-lg shadow-lg hover:shadow-lime-500/25 transition-all transform active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
+      >
+        <span>Ras Nikalo — Glass Bharo! 🥤</span>
+      </button>
+
+      <!-- Bottom Privacy Tagline -->
+      <footer class="w-full max-w-sm text-center mt-6">
+        <p class="text-[11px] font-body text-zinc-500 leading-relaxed">
+          🔒 <strong class="text-zinc-400">100% Private & In-Browser.</strong> Uses motion sensors to tilt and drink — zero data recorded.
+        </p>
+      </footer>
+    </main>
+
+    <!-- ========================================================= -->
+    <!-- VIEW 2: DEDICATED FULL-SCREEN CHAI BAAR SCALE DRINKING VIEW -->
+    <!-- ========================================================= -->
+    <div
+      id="view-drinking"
+      class="fixed inset-0 w-full h-full hidden overflow-hidden select-none touch-none z-40 bg-[#070e04]"
+    >
+      <!-- Background Canvas: Full screen edge-to-edge -->
+      <canvas id="liquid-physics-canvas" class="absolute inset-0 w-full h-full block"></canvas>
+
+      <!-- Top HUD Bar: Exact Chai Baar layout -->
+      <header class="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-4 pt-3.5 pb-2 pointer-events-auto">
+        <button
+          id="back-to-menu-btn"
+          type="button"
+          class="px-3.5 py-1.5 rounded-full border border-lime-500/40 bg-[#0e1b09]/85 backdrop-blur-md text-lime-400 font-display font-bold text-xs tracking-wider cursor-pointer active:scale-95 transition-all shadow-md flex items-center gap-1.5"
+        >
+          <span>🌾</span>
+          <span>गन्ना बार</span>
+        </button>
+
+        <div class="flex items-center gap-2">
+          <!-- Sips Metric Pill -->
+          <div class="px-3 py-1.5 rounded-full border border-lime-500/30 bg-[#0e1b09]/85 backdrop-blur-md text-lime-300 font-display font-bold text-xs flex items-center gap-1.5 shadow-md">
+            <span>🥤</span>
+            <span id="sip-count-badge">0/4</span>
+          </div>
+          <!-- Sound Toggle -->
+          <button
+            id="audio-toggle-btn"
+            type="button"
+            class="w-8 h-8 rounded-full border border-zinc-700 bg-[#0e1b09]/85 backdrop-blur-md flex items-center justify-center text-sm cursor-pointer active:scale-95 transition-all"
+            title="Toggle Sound"
+          >
+            <span id="sound-icon">🔊</span>
+          </button>
+          <!-- Restart Reset Button -->
+          <button
+            id="reset-btn"
+            type="button"
+            class="w-8 h-8 rounded-full border border-zinc-700 bg-[#0e1b09]/85 backdrop-blur-md flex items-center justify-center text-sm text-zinc-300 font-bold cursor-pointer active:scale-95 transition-all"
+            title="Restart Glass"
+          >
+            ↺
+          </button>
+        </div>
+      </header>
+
+      <!-- Jukebox Player Pill: Floating at upper right (exact Chai Baar position) -->
+      <div
+        id="jukebox-pill"
+        class="absolute top-14 right-4 z-20 flex items-center gap-2.5 px-3.5 py-1.5 rounded-full border border-lime-500/30 bg-[#0e1b09]/85 backdrop-blur-md shadow-xl cursor-pointer active:scale-95 transition-all pointer-events-auto"
+        title="Tap to toggle Lo-Fi music"
+      >
+        <div class="text-[10px] text-right leading-tight">
+          <span class="text-[8px] text-amber-400 font-bold tracking-widest block">NOW PLAYING</span>
+          <span id="jb-track-name" class="text-zinc-200 font-medium block">Ganna Tapri - Later</span>
+        </div>
+        <button id="jb-play-btn" type="button" class="text-xs text-white">▶️</button>
+        <span class="text-base animate-spin" style="animation-duration: 4s;">💿</span>
+      </div>
+
+      <!-- Pouring Droplets Stream when tilted past mouth threshold -->
+      <div id="pour-stream" class="absolute top-28 left-8 pointer-events-none opacity-0 transition-opacity duration-150 z-30">
+        <div class="text-3xl animate-bounce">💦</div>
+      </div>
+      <div id="pour-stream-right" class="absolute top-28 right-8 pointer-events-none opacity-0 transition-opacity duration-150 z-30">
+        <div class="text-3xl animate-bounce">💦</div>
+      </div>
+
+      <!-- Bottom HUD: Exact Chai Baar Card Layout -->
+      <div class="absolute bottom-5 left-4 right-4 max-w-sm mx-auto z-20 pointer-events-auto flex flex-col gap-2">
+        <div
+          id="sip-tap-card"
+          class="p-3.5 sm:p-4 rounded-3xl bg-[#0e1b09]/90 border border-lime-500/30 flex items-center gap-3.5 backdrop-blur-md shadow-2xl transition-all active:scale-95 cursor-pointer"
+          title="Tap to take a sip or tilt phone to mouth"
+        >
+          <div id="sip-flavor-icon" class="w-11 h-11 rounded-2xl bg-lime-950/60 border border-lime-500/40 flex items-center justify-center text-2xl shrink-0 shadow-inner">
+            🥤
+          </div>
+          <div class="text-left flex-1">
+            <div id="sip-card-title" class="font-display font-bold text-white text-base leading-tight">
+              Chuski Lo — Asli Sukoon
+            </div>
+            <div id="sip-card-desc" class="font-body text-xs text-zinc-400 mt-0.5 leading-snug">
+              Hold the phone like a real glass and tilt it towards your mouth to sip!
+            </div>
+          </div>
+        </div>
+
+        <!-- Victory Replay Button (When finished) -->
+        <button
+          id="finish-replay-btn"
+          type="button"
+          class="hidden w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-lime-600 via-emerald-600 to-amber-500 hover:from-lime-500 hover:to-amber-400 text-white font-display font-black text-base shadow-xl transition-all transform active:scale-95 items-center justify-center gap-2 cursor-pointer"
+        >
+          <span>Ek Aur Glass Ho Jaaye! 🔁</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Shagun Honor Unlock Modal (Kesar Flavor) -->
+    <div
+      id="shagun-modal"
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden select-none"
+    >
+      <div class="bg-zinc-900 border-2 border-lime-500/50 rounded-3xl p-6 max-w-xs w-full text-center shadow-2xl">
+        <div class="text-4xl mb-2">👑</div>
+        <h3 class="font-display font-black text-xl text-white mb-1">
+          SHAHI KESAR GANNA
+        </h3>
+        <p class="text-xs text-zinc-400 mb-4 leading-relaxed">
+          Yeh kesar wala ganna khaas khet se aaya hai — kolhu bhaiya ko ₹10 ka shagun de do 💛
+        </p>
+
+        <div class="w-32 h-32 mx-auto bg-white p-2 rounded-2xl mb-3 flex items-center justify-center shadow-inner">
+          <svg viewBox="0 0 100 100" class="w-full h-full" fill="#18181b">
+            <rect x="5" y="5" width="28" height="28" rx="4" />
+            <rect x="11" y="11" width="16" height="16" fill="#ffffff" />
+            <rect x="15" y="15" width="8" height="8" />
+
+            <rect x="67" y="5" width="28" height="28" rx="4" />
+            <rect x="73" y="11" width="16" height="16" fill="#ffffff" />
+            <rect x="77" y="15" width="8" height="8" />
+
+            <rect x="5" y="67" width="28" height="28" rx="4" />
+            <rect x="11" y="73" width="16" height="16" fill="#ffffff" />
+            <rect x="15" y="77" width="8" height="8" />
+
+            <circle cx="50" cy="50" r="12" fill="#84cc16" />
+            <text x="50" y="54" font-family="'Baloo 2', sans-serif" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle">₹10</text>
+          </svg>
+        </div>
+
+        <button
+          id="unlock-shagun-btn"
+          type="button"
+          class="w-full py-3 rounded-xl bg-gradient-to-r from-lime-600 to-amber-600 hover:from-lime-500 hover:to-amber-500 text-white font-display font-bold text-sm shadow-md mb-2 cursor-pointer"
+        >
+          Maine Pay Kar Diya Hai! 🤞
+        </button>
+        <p class="text-[10px] text-zinc-500 italic">
+          Honor system — koi real payment nahi, bas maze ke liye 😄
+        </p>
+      </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- CHAI BAAR EXACT MULTI-SENSOR GYROSCOPE TRACKER & FLUID ENGINE -->
+    <!-- ========================================================= -->
+    <script>
+      import { soundEngine } from '../scripts/audio';
+
+      // Flavors definition
+      type Flavor = 'saada' | 'nimbu' | 'kesar';
+      let selectedFlavor: Flavor = 'saada';
+      let isKesarUnlocked = false;
+      let sipsTaken = 0;
+      const MAX_SIPS = 4;
+      let isFinished = false;
+      let canSip = true;
+
+      // Views & Elements
+      const viewMenu = document.getElementById('view-menu');
+      const viewDrinking = document.getElementById('view-drinking');
+      const backToMenuBtn = document.getElementById('back-to-menu-btn');
+      const openGlassBtn = document.getElementById('open-glass-btn');
+      const sipTapCard = document.getElementById('sip-tap-card');
+      const sipFlavorIcon = document.getElementById('sip-flavor-icon');
+      const sipCardTitle = document.getElementById('sip-card-title');
+      const sipCardDesc = document.getElementById('sip-card-desc');
+      const sipCountBadge = document.getElementById('sip-count-badge');
+      const audioToggleBtn = document.getElementById('audio-toggle-btn');
+      const soundIcon = document.getElementById('sound-icon');
+      const resetBtn = document.getElementById('reset-btn');
+      const finishReplayBtn = document.getElementById('finish-replay-btn');
+      const pourStreamLeft = document.getElementById('pour-stream');
+      const pourStreamRight = document.getElementById('pour-stream-right');
+
+      // Jukebox Elements
+      const jukeboxPill = document.getElementById('jukebox-pill');
+      const jbPlayBtn = document.getElementById('jb-play-btn');
+
+      // Menu Cards
+      const tapriPills = document.querySelectorAll('.tapri-pill');
+      const kesarIcon = document.getElementById('kesar-icon');
+      const kesarDesc = document.getElementById('kesar-desc');
+      const shagunModal = document.getElementById('shagun-modal');
+      const unlockShagunBtn = document.getElementById('unlock-shagun-btn');
+
+      // Preview glass elements
+      const previewLiquid = document.getElementById('preview-liquid');
+      const previewMint = document.getElementById('preview-mint');
+      const previewKesar = document.getElementById('preview-kesar');
+
+      // Audio Lo-Fi in menu
+      const lofiToggleBtn = document.getElementById('lofi-toggle-btn');
+      const lofiIcon = document.getElementById('lofi-icon');
+      const lofiText = document.getElementById('lofi-text');
+
+      function showToast(msg: string) {
+        const toast = document.getElementById('app-toast');
+        if (!toast) return;
+        toast.textContent = msg;
+        toast.classList.remove('opacity-0', 'pointer-events-none');
+        toast.classList.add('opacity-100');
+        setTimeout(() => {
+          toast.classList.remove('opacity-100');
+          toast.classList.add('opacity-0', 'pointer-events-none');
+        }, 2200);
+      }
+
+      function updateAudioUI(isPlaying: boolean) {
+        if (lofiIcon) lofiIcon.textContent = isPlaying ? '⏸️' : '▶️';
+        if (lofiText) lofiText.textContent = isPlaying ? 'Tapri Lo-Fi (Playing 🎵)' : 'Ganna Tapri – Later';
+        if (jbPlayBtn) jbPlayBtn.textContent = isPlaying ? '⏸️' : '▶️';
+        if (soundIcon) soundIcon.textContent = isPlaying ? '🔊' : '🔇';
+      }
+
+      lofiToggleBtn?.addEventListener('click', () => {
+        const isPlaying = soundEngine.toggleLofi();
+        updateAudioUI(isPlaying);
+        showToast(isPlaying ? '🎵 Tapri Chill Lo-Fi Started' : 'Audio Paused');
+      });
+
+      audioToggleBtn?.addEventListener('click', () => {
+        const isMuted = soundEngine.toggleMute();
+        updateAudioUI(!isMuted);
+      });
+
+      jukeboxPill?.addEventListener('click', () => {
+        const isPlaying = soundEngine.toggleLofi();
+        updateAudioUI(isPlaying);
+      });
+
+      // Flavor selection in menu
+      tapriPills.forEach((pill) => {
+        pill.addEventListener('click', () => {
+          const flavor = pill.getAttribute('data-flavor') as Flavor;
+          if (flavor === 'kesar' && !isKesarUnlocked) {
+            shagunModal?.classList.remove('hidden');
+            return;
+          }
+          selectedFlavor = flavor;
+          soundEngine.playClick();
+          updateMenuUI();
+        });
+      });
+
+      unlockShagunBtn?.addEventListener('click', () => {
+        isKesarUnlocked = true;
+        selectedFlavor = 'kesar';
+        shagunModal?.classList.add('hidden');
+        if (kesarIcon) kesarIcon.textContent = '👑';
+        if (kesarDesc) kesarDesc.textContent = 'Unlocked Shahi Blend';
+        soundEngine.playCheers();
+        showToast('👑 Shahi Kesar Unlocked!');
+        updateMenuUI();
+      });
+
+      function updateMenuUI() {
+        tapriPills.forEach((pill) => {
+          const f = pill.getAttribute('data-flavor');
+          if (f === selectedFlavor) {
+            pill.classList.remove('border-zinc-800', 'bg-zinc-900/40');
+            pill.classList.add('border-lime-500', 'bg-lime-950/40', 'glow-green');
+          } else {
+            pill.classList.remove('border-lime-500', 'bg-lime-950/40', 'glow-green');
+            pill.classList.add('border-zinc-800', 'bg-zinc-900/40');
+          }
+        });
+
+        // Update preview glass
+        if (selectedFlavor === 'kesar') {
+          previewLiquid?.setAttribute('fill', 'url(#previewKesarGrad)');
+          previewKesar?.classList.remove('hidden');
+          previewMint?.classList.add('hidden');
+        } else if (selectedFlavor === 'nimbu') {
+          previewLiquid?.setAttribute('fill', 'url(#previewJuiceGrad)');
+          previewMint?.classList.remove('hidden');
+          previewKesar?.classList.add('hidden');
+        } else {
+          previewLiquid?.setAttribute('fill', 'url(#previewJuiceGrad)');
+          previewMint?.classList.add('hidden');
+          previewKesar?.classList.add('hidden');
+        }
+      }
+
+      // =========================================================
+      // TRUE PHYSICAL SENSOR MANAGER (ZERO FAKING)
+      // Reads purely physical hardware motion & orientation
+      // =========================================================
+      class SensorManager {
+        public status: 'unsupported' | 'permission-required' | 'denied' | 'active' = 'permission-required';
+        public source: 'orientation' | 'orientationabsolute' | 'motion' | 'none' = 'none';
+
+        // Raw physical orientation values from hardware
+        public rawAlpha: number | null = null;
+        public rawBeta: number | null = null;
+        public rawGamma: number | null = null;
+
+        // Raw physical gravity vector (m/s²) from accelerometer
+        public gravityX: number | null = null;
+        public gravityY: number | null = null;
+        public gravityZ: number | null = null;
+
+        // Calculated tilt angles in degrees
+        // tiltX (Roll): negative when tilted left, positive when tilted right
+        // tiltY (Pitch): upright is ~65-80°, drinking tilt is >= 84°
+        public calculatedTiltX: number = 0;
+        public calculatedTiltY: number = 70;
+
+        // Normalized tilt (-1.0 to +1.0)
+        public normalizedTiltX: number = 0;
+        public normalizedTiltY: number = 0;
+
+        public lastUpdateTimestamp: string = 'waiting...';
+        public lastEventMs: number = 0;
+        public eventCount: number = 0;
+        public isInsecureOrigin: boolean = false;
+
+        private hasAttachedListeners = false;
+        private lastFilterMs = performance.now();
+
+        constructor() {
+          this.checkSupport();
+        }
+
+        public checkSupport() {
+          if (typeof window === 'undefined') return;
+
+          this.isInsecureOrigin = !window.isSecureContext && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1';
+
+          const hasOrient = 'DeviceOrientationEvent' in window;
+          const hasMotion = 'DeviceMotionEvent' in window;
+
+          if (!hasOrient && !hasMotion) {
+            this.status = 'unsupported';
+            return;
+          }
+
+          const DOE = (window as any).DeviceOrientationEvent;
+          const DME = (window as any).DeviceMotionEvent;
+          const needsPermission =
+            (DOE && typeof DOE.requestPermission === 'function') ||
+            (DME && typeof DME.requestPermission === 'function');
+
+          if (needsPermission) {
+            this.status = 'permission-required';
+          } else {
+            // Android / desktop browser: auto attach listeners
+            this.attachListeners();
+          }
+        }
+
+        public async requestAccess(): Promise<boolean> {
+          const DOE = (window as any).DeviceOrientationEvent;
+          const DME = (window as any).DeviceMotionEvent;
+
+          let granted = false;
+          if (DOE && typeof DOE.requestPermission === 'function') {
+            try {
+              const res = await DOE.requestPermission();
+              if (res === 'granted') {
+                granted = true;
+              } else {
+                this.status = 'denied';
+                return false;
+              }
+            } catch (err) {
+              console.warn('Orientation permission error:', err);
+              this.status = 'denied';
+              return false;
+            }
+          } else {
+            granted = true;
+          }
+
+          if (DME && typeof DME.requestPermission === 'function') {
+            try {
+              await DME.requestPermission();
+            } catch (e) {}
+          }
+
+          this.attachListeners();
+          return granted;
+        }
+
+        public attachListeners() {
+          if (this.hasAttachedListeners || typeof window === 'undefined') return;
+          this.hasAttachedListeners = true;
+
+          // 1. Standard DeviceOrientation Event
+          window.addEventListener(
+            'deviceorientation',
+            (e: DeviceOrientationEvent) => {
+              this.handleOrientation(e, 'orientation');
+            },
+            { passive: true }
+          );
+
+          // 2. DeviceOrientationAbsolute Event (Android Chrome)
+          window.addEventListener(
+            'deviceorientationabsolute' as any,
+            (e: any) => {
+              this.handleOrientation(e, 'orientationabsolute');
+            },
+            { passive: true }
+          );
+
+          // 3. DeviceMotionEvent (accelerationIncludingGravity vector)
+          window.addEventListener(
+            'devicemotion',
+            (e: DeviceMotionEvent) => {
+              this.handleMotion(e);
+            },
+            { passive: true }
+          );
+        }
+
+        private handleOrientation(e: DeviceOrientationEvent, src: 'orientation' | 'orientationabsolute') {
+          if (e.alpha === null && e.beta === null && e.gamma === null) return;
+
+          this.status = 'active';
+          this.source = src;
+          this.eventCount++;
+          const now = performance.now();
+          this.lastEventMs = now;
+          this.formatTimestamp();
+
+          this.rawAlpha = e.alpha !== null ? Math.round(e.alpha * 10) / 10 : null;
+          this.rawBeta = e.beta !== null ? Math.round(e.beta * 10) / 10 : null;
+          this.rawGamma = e.gamma !== null ? Math.round(e.gamma * 10) / 10 : null;
+
+          // Account for portrait/landscape screen rotation
+          const screenAngle = (window.screen?.orientation?.angle) ?? ((window as any).orientation as number) ?? 0;
+          let roll = e.gamma ?? 0;
+          let pitch = e.beta ?? 0;
+
+          if (screenAngle === 90) {
+            roll = pitch;
+            pitch = -(e.gamma ?? 0);
+          } else if (screenAngle === -90 || screenAngle === 270) {
+            roll = -pitch;
+            pitch = e.gamma ?? 0;
+          } else if (screenAngle === 180) {
+            roll = -roll;
+            pitch = -pitch;
+          }
+
+          // Stable low-pass smoothing (no wild drift, stable when still, snappy when moving)
+          const dt = Math.min((now - this.lastFilterMs) / 1000, 0.05);
+          this.lastFilterMs = now;
+          const lerpRate = 1 - Math.pow(0.12, dt * 60);
+
+          this.calculatedTiltX += (roll - this.calculatedTiltX) * lerpRate;
+          this.calculatedTiltY += (pitch - this.calculatedTiltY) * lerpRate;
+
+          this.normalizedTiltX = Math.max(-1, Math.min(1, this.calculatedTiltX / 45));
+          this.normalizedTiltY = Math.max(-1, Math.min(1, (this.calculatedTiltY - 70) / 45));
+        }
+
+        private handleMotion(e: DeviceMotionEvent) {
+          const acc = e.accelerationIncludingGravity;
+          if (!acc || typeof acc.x !== 'number' || typeof acc.y !== 'number') return;
+          if (acc.x === 0 && acc.y === 0 && (acc.z === 0 || acc.z === null)) return;
+
+          this.gravityX = Math.round(acc.x * 100) / 100;
+          this.gravityY = Math.round(acc.y * 100) / 100;
+          this.gravityZ = typeof acc.z === 'number' ? Math.round(acc.z * 100) / 100 : null;
+
+          const now = performance.now();
+          this.lastEventMs = now;
+          this.formatTimestamp();
+
+          // Fallback if orientation event is not sending data
+          if (this.source !== 'orientation' && this.source !== 'orientationabsolute') {
+            this.status = 'active';
+            this.source = 'motion';
+            this.eventCount++;
+
+            // Physical roll from gravity:
+            // When tilted left 30°: gravity pulls towards left edge (acc.x is positive)
+            // W3C gamma when tilted left is NEGATIVE (-30°)
+            const rollRad = Math.atan2(-acc.x, Math.max(0.5, Math.abs(acc.y)));
+            const pitchRad = Math.atan2(Math.abs(acc.z ?? 0), acc.y);
+
+            const derivedGamma = (rollRad * 180) / Math.PI;
+            const derivedBeta = (pitchRad * 180) / Math.PI;
+
+            this.rawGamma = Math.round(derivedGamma * 10) / 10;
+            this.rawBeta = Math.round(derivedBeta * 10) / 10;
+
+            const dt = Math.min((now - this.lastFilterMs) / 1000, 0.05);
+            this.lastFilterMs = now;
+            const lerpRate = 1 - Math.pow(0.12, dt * 60);
+
+            this.calculatedTiltX += (derivedGamma - this.calculatedTiltX) * lerpRate;
+            this.calculatedTiltY += (derivedBeta - this.calculatedTiltY) * lerpRate;
+
+            this.normalizedTiltX = Math.max(-1, Math.min(1, this.calculatedTiltX / 45));
+            this.normalizedTiltY = Math.max(-1, Math.min(1, (this.calculatedTiltY - 70) / 45));
+          }
+        }
+
+        private formatTimestamp() {
+          const d = new Date();
+          const hh = String(d.getHours()).padStart(2, '0');
+          const mm = String(d.getMinutes()).padStart(2, '0');
+          const ss = String(d.getSeconds()).padStart(2, '0');
+          const ms = String(d.getMilliseconds()).padStart(3, '0');
+          this.lastUpdateTimestamp = `${hh}:${mm}:${ss}.${ms}`;
+        }
+
+        public isTiltedToDrink(): boolean {
+          if (this.status !== 'active') return false;
+          // Drink when pitch is tilted back (>= 84°) OR vertical gravity inverted (acc.y < 4.0)
+          if (this.calculatedTiltY >= 84) return true;
+          if (this.gravityY !== null && this.gravityY < 4.0) return true;
+          return false;
+        }
+
+        public isPhoneLowered(): boolean {
+          const isAngleLowered = this.calculatedTiltY <= 76;
+          const isGravityLowered = this.gravityY === null || this.gravityY >= 5.5;
+          return isAngleLowered && isGravityLowered;
+        }
+      }
+
+      const sensorManager = new SensorManager();
+
+      // =========================================================
+      // CHAI BAAR EXACT FULL-SCREEN LIQUID RENDERER
+      // Full screen edge-to-edge canvas with true tapri glass tumbler geometry,
+      // 36 spring surface nodes, dynamic wave slosh, froth ribbon, and bubbles
+      // =========================================================
+      class LiquidRenderer {
+        private canvas: HTMLCanvasElement;
+        private ctx: CanvasRenderingContext2D;
+
+        public nodeCount = 36;
+        public nodes: Array<{ x: number; y: number; targetY: number; vy: number }> = [];
+        public k = 0.022;       // Gentle spring tension
+        public damping = 0.088; // Viscous fluid damping
+        public spread = 0.14;   // Neighbor wave propagation
+
+        public juiceLevel = 1.0;       // 1.0 = full, 0.0 = empty
+        public targetJuiceLevel = 1.0;
+        public tiltAngle = 0;          // Radians
+        public topRimY = 115;          // Glass top rim Y coordinate
+        public glassBottomPad = 60;    // Glass base pad
+
+        // Geometry cache
+        public glassTx1 = 0;
+        public glassTx2 = 0;
+        public glassBx1 = 0;
+        public glassBx2 = 0;
+
+        // Floating bubbles & froth specks
+        public bubbles: Array<{ x: number; y: number; radius: number; speed: number; wobble: number; wobbleSpeed: number }> = [];
+        public frothSpecks: Array<{ nodePct: number; offsetY: number; radius: number }> = [];
+
+        constructor(canvas: HTMLCanvasElement) {
+          this.canvas = canvas;
+          this.ctx = canvas.getContext('2d')!;
+          this.resize();
+          this.initNodes();
+          this.initBubbles();
+          this.initFroth();
+        }
+
+        public resize() {
+          const w = window.innerWidth;
+          const h = window.innerHeight;
+          const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+          this.canvas.width = w * dpr;
+          this.canvas.height = h * dpr;
+          this.canvas.style.width = w + 'px';
+          this.canvas.style.height = h + 'px';
+          this.ctx.resetTransform();
+          this.ctx.scale(dpr, dpr);
+
+          // Glass geometry: 88% width at top, 62% width at bottom
+          const topW = Math.min(w * 0.88, 480);
+          const bottomW = Math.min(w * 0.62, 340);
+          this.glassTx1 = (w - topW) / 2;
+          this.glassTx2 = w - this.glassTx1;
+          this.glassBx1 = (w - bottomW) / 2;
+          this.glassBx2 = w - this.glassBx1;
+          this.topRimY = 115;
+
+          this.initNodes();
+        }
+
+        public initNodes() {
+          this.nodes = [];
+          const w = window.innerWidth;
+          const baseSurfaceY = this.topRimY + 45;
+
+          for (let i = 0; i < this.nodeCount; i++) {
+            this.nodes.push({
+              x: (w / (this.nodeCount - 1)) * i,
+              y: baseSurfaceY,
+              targetY: baseSurfaceY,
+              vy: 0,
+            });
+          }
+        }
+
+        public initBubbles() {
+          this.bubbles = [];
+          for (let i = 0; i < 28; i++) {
+            this.bubbles.push({
+              x: 0.1 + Math.random() * 0.8,
+              y: 0.3 + Math.random() * 0.6,
+              radius: 1.5 + Math.random() * 3.0,
+              speed: 35 + Math.random() * 55,
+              wobble: Math.random() * Math.PI * 2,
+              wobbleSpeed: 2.0 + Math.random() * 3.0,
+            });
+          }
+        }
+
+        public initFroth() {
+          this.frothSpecks = [];
+          for (let i = 0; i < 35; i++) {
+            this.frothSpecks.push({
+              nodePct: Math.random(),
+              offsetY: -3 + Math.random() * 10,
+              radius: 2 + Math.random() * 4.0,
+            });
+          }
+        }
+
+        public splash(centerNormalizedX: number, velocity: number) {
+          const centerIdx = Math.floor(centerNormalizedX * (this.nodeCount - 1));
+          const radius = 4;
+          for (let i = Math.max(0, centerIdx - radius); i <= Math.min(this.nodeCount - 1, centerIdx + radius); i++) {
+            const dist = Math.abs(i - centerIdx);
+            const factor = Math.cos((dist / radius) * (Math.PI / 2));
+            if (this.nodes[i]) {
+              this.nodes[i].vy += velocity * factor;
+            }
+          }
+        }
+
+        public update(roll: number, dt: number) {
+          dt = Math.min(dt, 0.1);
+          const w = window.innerWidth;
+          const h = window.innerHeight;
+
+          // Smooth liquid drainage level
+          const juiceLerp = 1 - Math.pow(0.08, dt * 60);
+          this.juiceLevel += (this.targetJuiceLevel - this.juiceLevel) * juiceLerp;
+
+          // Responsive tilt tracking with fluid momentum
+          const tiltDamping = 1 - Math.pow(0.35, dt * 60);
+          this.tiltAngle += (roll - this.tiltAngle) * tiltDamping;
+
+          // Equilibrium line
+          const bottomY = h - 20;
+          const emptyY = bottomY - this.glassBottomPad;
+          const fullY = this.topRimY + 45;
+          const currentBaseY = fullY + (emptyY - fullY) * (1 - this.juiceLevel);
+
+          // Clamped tilt slope:
+          // Negative roll (phone tilted left) => liquid rises on the left side of screen
+          const clampedTilt = Math.max(-0.75, Math.min(0.75, this.tiltAngle));
+          const slope = -Math.tan(clampedTilt);
+          const centerX = w / 2;
+
+          // 1. Spring force & damping per node (snappy fluid following + wave ripples)
+          const stiffness = 0.055;
+          const damp = 0.095;
+          for (let i = 0; i < this.nodeCount; i++) {
+            const node = this.nodes[i];
+            node.x = (w / (this.nodeCount - 1)) * i;
+            const targetFromTilt = currentBaseY + slope * (node.x - centerX);
+            node.targetY = Math.max(this.topRimY, Math.min(emptyY + 20, targetFromTilt));
+
+            const delta = node.y - node.targetY;
+            const force = -stiffness * delta - damp * node.vy;
+            node.vy += force * (dt * 60);
+            node.y += (node.targetY - node.y) * 0.28 + node.vy * (dt * 60);
+          }
+
+          // 2. 3-pass neighbor wave propagation
+          for (let p = 0; p < 3; p++) {
+            for (let i = 0; i < this.nodeCount; i++) {
+              if (i > 0) {
+                const leftDelta = this.spread * (this.nodes[i].y - this.nodes[i - 1].y);
+                this.nodes[i - 1].vy += leftDelta;
+                this.nodes[i - 1].y += leftDelta * 0.5;
+              }
+              if (i < this.nodeCount - 1) {
+                const rightDelta = this.spread * (this.nodes[i].y - this.nodes[i + 1].y);
+                this.nodes[i + 1].vy += rightDelta;
+                this.nodes[i + 1].y += rightDelta * 0.5;
+              }
+            }
+          }
+
+          // 3. Bubbles rise
+          for (let i = 0; i < this.bubbles.length; i++) {
+            const b = this.bubbles[i];
+            b.y -= (b.speed * dt) / h;
+            b.wobble += b.wobbleSpeed * dt;
+
+            const nodeIdx = Math.max(0, Math.min(this.nodeCount - 1, Math.floor(b.x * (this.nodeCount - 1))));
+            const surfaceAtB = this.nodes[nodeIdx] ? this.nodes[nodeIdx].y : currentBaseY;
+
+            if (b.y * h < surfaceAtB + 8 || b.y * h > emptyY) {
+              b.y = 0.88 + Math.random() * 0.08;
+              b.x = 0.12 + Math.random() * 0.76;
+            }
+          }
+        }
+
+        public draw() {
+          const ctx = this.ctx;
+          const w = window.innerWidth;
+          const h = window.innerHeight;
+          const bottomY = h - 20;
+          const emptyY = bottomY - this.glassBottomPad;
+
+          ctx.clearRect(0, 0, w, h);
+
+          // 1. Ambient Background Glow
+          const backGrad = ctx.createRadialGradient(
+            w * 0.5, h * 0.45, 40,
+            w * 0.5, h * 0.5, Math.max(w, h) * 0.75
+          );
+          backGrad.addColorStop(0, '#13240b');
+          backGrad.addColorStop(0.6, '#0a1406');
+          backGrad.addColorStop(1, '#040903');
+          ctx.fillStyle = backGrad;
+          ctx.fillRect(0, 0, w, h);
+
+          // 2. Glass Clipping Mask (Tapered Tumbler: 88% top, 62% bottom)
+          ctx.save();
+          ctx.beginPath();
+          ctx.moveTo(this.glassTx1, this.topRimY);
+          ctx.lineTo(this.glassTx2, this.topRimY);
+          ctx.lineTo(this.glassBx2, bottomY);
+          ctx.lineTo(this.glassBx1, bottomY);
+          ctx.closePath();
+          ctx.clip();
+
+          // Inside Glass Dark Backing
+          ctx.fillStyle = 'rgba(7, 16, 5, 0.9)';
+          ctx.fillRect(0, 0, w, h);
+
+          // 3. Liquid Body
+          if (this.juiceLevel > 0.02 && this.nodes.length >= 2) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(0, h);
+            ctx.lineTo(w, h);
+            ctx.lineTo(w, this.nodes[this.nodeCount - 1].y);
+
+            // Smooth quadratic curve along surface
+            for (let i = this.nodeCount - 1; i > 0; i--) {
+              const p0 = this.nodes[i];
+              const p1 = this.nodes[i - 1];
+              const mx = (p0.x + p1.x) / 2;
+              const my = (p0.y + p1.y) / 2;
+              ctx.quadraticCurveTo(p0.x, p0.y, mx, my);
+            }
+            ctx.lineTo(0, this.nodes[0].y);
+            ctx.closePath();
+
+            // Sugarcane Flavor Gradient
+            const meanY = (this.nodes[0].y + this.nodes[this.nodeCount - 1].y) / 2;
+            const juiceGrad = ctx.createLinearGradient(w / 2, meanY, w / 2, bottomY);
+
+            if (selectedFlavor === 'kesar') {
+              juiceGrad.addColorStop(0, '#FFE082');
+              juiceGrad.addColorStop(0.25, '#FFB300');
+              juiceGrad.addColorStop(0.65, '#E65100');
+              juiceGrad.addColorStop(0.85, '#9C2706');
+              juiceGrad.addColorStop(1, '#4E1103');
+            } else if (selectedFlavor === 'nimbu') {
+              juiceGrad.addColorStop(0, '#F3FF96');
+              juiceGrad.addColorStop(0.25, '#D4F138');
+              juiceGrad.addColorStop(0.65, '#A3C914');
+              juiceGrad.addColorStop(0.85, '#5C7C0B');
+              juiceGrad.addColorStop(1, '#2E3F05');
+            } else {
+              // Classic Saada Ganna
+              juiceGrad.addColorStop(0, '#E4F78F');
+              juiceGrad.addColorStop(0.25, '#C5E038');
+              juiceGrad.addColorStop(0.65, '#99B816');
+              juiceGrad.addColorStop(0.85, '#556E0B');
+              juiceGrad.addColorStop(1, '#2E3D06');
+            }
+
+            ctx.fillStyle = juiceGrad;
+            ctx.fill();
+
+            // 4. Rising Carbonation Bubbles
+            ctx.fillStyle = 'rgba(255, 255, 230, 0.7)';
+            for (let i = 0; i < this.bubbles.length; i++) {
+              const b = this.bubbles[i];
+              const absX = b.x * w + Math.sin(b.wobble) * 6;
+              const absY = b.y * h;
+              const nodeIdx = Math.max(0, Math.min(this.nodeCount - 1, Math.floor(b.x * (this.nodeCount - 1))));
+              const surfaceY = this.nodes[nodeIdx] ? this.nodes[nodeIdx].y : meanY;
+
+              if (absY > surfaceY + 6 && absY < emptyY) {
+                ctx.beginPath();
+                ctx.arc(absX, absY, b.radius, 0, Math.PI * 2);
+                ctx.fill();
+              }
+            }
+
+            // 5. Floating Garnishes (Ice, Mint, Saffron)
+            // Ice cube 1
+            const iceCol = this.nodes[Math.floor(this.nodeCount * 0.35)];
+            if (iceCol && this.juiceLevel > 0.05) {
+              ctx.save();
+              ctx.translate(iceCol.x, iceCol.y + 4);
+              ctx.rotate(this.tiltAngle * 0.7);
+              ctx.fillStyle = 'rgba(230, 245, 255, 0.65)';
+              ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+              ctx.lineWidth = 1.8;
+              ctx.fillRect(-14, -14, 28, 28);
+              ctx.strokeRect(-14, -14, 28, 28);
+              ctx.restore();
+            }
+            // Ice cube 2
+            const iceCol2 = this.nodes[Math.floor(this.nodeCount * 0.68)];
+            if (iceCol2 && this.juiceLevel > 0.05) {
+              ctx.save();
+              ctx.translate(iceCol2.x, iceCol2.y + 2);
+              ctx.rotate(-this.tiltAngle * 0.6 + 0.4);
+              ctx.fillStyle = 'rgba(230, 245, 255, 0.6)';
+              ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
+              ctx.lineWidth = 1.6;
+              ctx.fillRect(-12, -12, 24, 24);
+              ctx.strokeRect(-12, -12, 24, 24);
+              ctx.restore();
+            }
+
+            // Mint garnish for Nimbu
+            if (selectedFlavor === 'nimbu') {
+              const mintCol = this.nodes[Math.floor(this.nodeCount * 0.52)];
+              if (mintCol && this.juiceLevel > 0.05) {
+                ctx.save();
+                ctx.translate(mintCol.x, mintCol.y + 3);
+                ctx.rotate(this.tiltAngle + 0.2);
+                ctx.fillStyle = '#48BB78';
+                ctx.strokeStyle = '#22543D';
+                ctx.lineWidth = 1.2;
+                ctx.beginPath();
+                ctx.ellipse(0, 0, 13, 7, 0.2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+                ctx.restore();
+              }
+            }
+
+            // Saffron strand for Kesar
+            if (selectedFlavor === 'kesar') {
+              const kesarCol = this.nodes[Math.floor(this.nodeCount * 0.48)];
+              if (kesarCol && this.juiceLevel > 0.05) {
+                ctx.save();
+                ctx.translate(kesarCol.x, kesarCol.y + 2);
+                ctx.strokeStyle = '#DC2626';
+                ctx.lineWidth = 2.4;
+                ctx.beginPath();
+                ctx.moveTo(-14, 0);
+                ctx.quadraticCurveTo(0, -6, 14, 2);
+                ctx.stroke();
+                ctx.restore();
+              }
+            }
+
+            // 6. Creamy Sugarcane Froth (Foam Ribbon / Jhag)
+            const frothH = 13;
+            ctx.beginPath();
+            ctx.moveTo(0, this.nodes[0].y);
+            for (let i = 1; i < this.nodeCount; i++) {
+              const p0 = this.nodes[i - 1];
+              const p1 = this.nodes[i];
+              const mx = (p0.x + p1.x) / 2;
+              const my = (p0.y + p1.y) / 2;
+              ctx.quadraticCurveTo(p0.x, p0.y, mx, my);
+            }
+            ctx.lineTo(w, this.nodes[this.nodeCount - 1].y + frothH);
+
+            for (let i = this.nodeCount - 1; i > 0; i--) {
+              const p0 = this.nodes[i];
+              const p1 = this.nodes[i - 1];
+              const mx = (p0.x + p1.x) / 2;
+              const my = ((p0.y + p1.y) / 2) + frothH;
+              ctx.quadraticCurveTo(p0.x, p0.y + frothH, mx, my);
+            }
+            ctx.lineTo(0, this.nodes[0].y + frothH);
+            ctx.closePath();
+
+            const frothGrad = ctx.createLinearGradient(0, meanY - 4, 0, meanY + frothH + 4);
+            frothGrad.addColorStop(0, '#FCFFE7');
+            frothGrad.addColorStop(0.35, '#EBF9A4');
+            frothGrad.addColorStop(0.75, '#D5EE66');
+            frothGrad.addColorStop(1, 'rgba(180, 220, 50, 0)');
+            ctx.fillStyle = frothGrad;
+            ctx.fill();
+
+            // Froth specks along surface
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+            for (let i = 0; i < this.frothSpecks.length; i++) {
+              const s = this.frothSpecks[i];
+              const nodeIdx = Math.max(0, Math.min(this.nodeCount - 1, Math.floor(s.nodePct * (this.nodeCount - 1))));
+              const baseNode = this.nodes[nodeIdx];
+              if (baseNode) {
+                const sx = baseNode.x + (s.nodePct * 14 - 7);
+                const sy = baseNode.y + s.offsetY;
+                ctx.beginPath();
+                ctx.arc(sx, sy, s.radius, 0, Math.PI * 2);
+                ctx.fill();
+              }
+            }
+
+            ctx.restore();
+          }
+
+          // 7. Fluted Mumbai Cutting Chai Glass Tumbler Facets & Overlay
+          this.drawGlassTumbler(ctx, w, h);
+
+          ctx.restore(); // Restore clipping
+        }
+
+        private drawGlassTumbler(ctx: CanvasRenderingContext2D, w: number, h: number) {
+          const bottomY = h - 20;
+
+          // (a) Thick Pressed-Glass Base at Bottom
+          const baseH = this.glassBottomPad + 18;
+          const baseGrad = ctx.createLinearGradient(0, bottomY - baseH, 0, bottomY);
+          baseGrad.addColorStop(0, 'rgba(255, 255, 255, 0.08)');
+          baseGrad.addColorStop(0.3, 'rgba(200, 235, 150, 0.15)');
+          baseGrad.addColorStop(0.8, 'rgba(40, 70, 20, 0.5)');
+          baseGrad.addColorStop(1, 'rgba(10, 20, 5, 0.85)');
+          ctx.fillStyle = baseGrad;
+          ctx.fillRect(0, bottomY - baseH, w, baseH);
+
+          // Glass base rim line
+          ctx.beginPath();
+          ctx.moveTo(0, bottomY - baseH);
+          ctx.lineTo(w, bottomY - baseH);
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
+          ctx.lineWidth = 2.0;
+          ctx.stroke();
+
+          // (b) 8 Authentic Fluted Facet Ribs
+          const facetCount = 8;
+          for (let i = 1; i < facetCount; i++) {
+            const tX = this.glassTx1 + ((this.glassTx2 - this.glassTx1) / facetCount) * i;
+            const bX = this.glassBx1 + ((this.glassBx2 - this.glassBx1) / facetCount) * i;
+
+            ctx.beginPath();
+            ctx.moveTo(tX, this.topRimY);
+            ctx.lineTo(bX, bottomY - baseH);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(tX + 3, this.topRimY);
+            ctx.lineTo(bX + 3, bottomY - baseH);
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.18)';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+          }
+
+          // (c) Left Wall Specular Gloss Strip
+          ctx.beginPath();
+          ctx.moveTo(this.glassTx1, this.topRimY);
+          ctx.lineTo(this.glassTx1 + 24, this.topRimY);
+          ctx.lineTo(this.glassBx1 + 24, bottomY);
+          ctx.lineTo(this.glassBx1, bottomY);
+          ctx.closePath();
+          const leftGloss = ctx.createLinearGradient(this.glassBx1, 0, this.glassBx1 + 24, 0);
+          leftGloss.addColorStop(0, 'rgba(255, 255, 255, 0.45)');
+          leftGloss.addColorStop(0.4, 'rgba(255, 255, 255, 0.15)');
+          leftGloss.addColorStop(1, 'rgba(255, 255, 255, 0)');
+          ctx.fillStyle = leftGloss;
+          ctx.fill();
+
+          // (d) Right Wall Specular Gloss Strip
+          ctx.beginPath();
+          ctx.moveTo(this.glassTx2 - 24, this.topRimY);
+          ctx.lineTo(this.glassTx2, this.topRimY);
+          ctx.lineTo(this.glassBx2, bottomY);
+          ctx.lineTo(this.glassBx2 - 24, bottomY);
+          ctx.closePath();
+          const rightGloss = ctx.createLinearGradient(this.glassBx2 - 24, 0, this.glassBx2, 0);
+          rightGloss.addColorStop(0, 'rgba(255, 255, 255, 0)');
+          rightGloss.addColorStop(0.6, 'rgba(255, 255, 255, 0.12)');
+          rightGloss.addColorStop(1, 'rgba(255, 255, 255, 0.35)');
+          ctx.fillStyle = rightGloss;
+          ctx.fill();
+
+          // (e) Top Glass Oval Lip Rim
+          const rimW = this.glassTx2 - this.glassTx1;
+          ctx.beginPath();
+          ctx.ellipse(this.glassTx1 + rimW / 2, this.topRimY, rimW / 2, 9, 0, 0, Math.PI * 2);
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+          ctx.lineWidth = 2.2;
+          ctx.stroke();
+
+          // (f) Subtle dotted fill line
+          ctx.beginPath();
+          ctx.setLineDash([4, 6]);
+          ctx.ellipse(this.glassTx1 + rimW / 2, this.topRimY + 30, (rimW * 0.96) / 2, 8, 0, 0, Math.PI * 2);
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+      }
+
+      // Initialize Liquid Renderer
+      const canvas = document.getElementById('liquid-physics-canvas') as HTMLCanvasElement;
+      let liquidRenderer: LiquidRenderer | null = null;
+      if (canvas) {
+        liquidRenderer = new LiquidRenderer(canvas);
+        window.addEventListener('resize', () => liquidRenderer?.resize());
+        window.addEventListener('orientationchange', () => {
+          setTimeout(() => liquidRenderer?.resize(), 150);
+        });
+      }
+
+      // Update real-time Sensor Debug Panel
+      function updateDebugPanel() {
+        const dbgStatus = document.getElementById('dbg-status');
+        const dbgSource = document.getElementById('dbg-source');
+        const dbgAlpha = document.getElementById('dbg-alpha');
+        const dbgBeta = document.getElementById('dbg-beta');
+        const dbgGamma = document.getElementById('dbg-gamma');
+        const dbgTiltX = document.getElementById('dbg-tilt-x');
+        const dbgTiltY = document.getElementById('dbg-tilt-y');
+        const dbgGravX = document.getElementById('dbg-grav-x');
+        const dbgGravY = document.getElementById('dbg-grav-y');
+        const dbgMeterBar = document.getElementById('dbg-meter-bar');
+        const dbgTimestamp = document.getElementById('dbg-timestamp');
+        const dbgPulseDot = document.getElementById('dbg-pulse-dot');
+        const dbgPermBtn = document.getElementById('dbg-perm-btn');
+        const dbgInsecureAlert = document.getElementById('dbg-insecure-alert');
+
+        if (!dbgStatus) return;
+
+        // 1. Status badge color & text
+        if (sensorManager.status === 'active') {
+          dbgStatus.textContent = 'ACTIVE ⚡';
+          dbgStatus.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
+          if (dbgPulseDot) dbgPulseDot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-ping';
+          if (dbgPermBtn) dbgPermBtn.classList.add('hidden');
+        } else if (sensorManager.status === 'permission-required') {
+          dbgStatus.textContent = 'PERMISSION REQUIRED';
+          dbgStatus.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 animate-pulse';
+          if (dbgPulseDot) dbgPulseDot.className = 'w-2 h-2 rounded-full bg-amber-400';
+          if (dbgPermBtn) dbgPermBtn.classList.remove('hidden');
+        } else if (sensorManager.status === 'denied') {
+          dbgStatus.textContent = 'DENIED ❌';
+          dbgStatus.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40';
+          if (dbgPulseDot) dbgPulseDot.className = 'w-2 h-2 rounded-full bg-rose-500';
+        } else {
+          dbgStatus.textContent = 'UNSUPPORTED';
+          dbgStatus.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-zinc-700 text-zinc-400 border border-zinc-600';
+          if (dbgPulseDot) dbgPulseDot.className = 'w-2 h-2 rounded-full bg-zinc-600';
+        }
+
+        // Insecure context warning (Chrome on Android blocks sensors on plain http://LAN-IP)
+        if (dbgInsecureAlert) {
+          if (sensorManager.isInsecureOrigin && sensorManager.status !== 'active') {
+            dbgInsecureAlert.classList.remove('hidden');
+          } else {
+            dbgInsecureAlert.classList.add('hidden');
+          }
+        }
+
+        // 2. Raw sensor values
+        if (dbgSource) dbgSource.textContent = sensorManager.source;
+        if (dbgAlpha) dbgAlpha.textContent = sensorManager.rawAlpha !== null ? `${sensorManager.rawAlpha}°` : '--';
+        if (dbgBeta) dbgBeta.textContent = sensorManager.rawBeta !== null ? `${sensorManager.rawBeta}°` : '--';
+        if (dbgGamma) dbgGamma.textContent = sensorManager.rawGamma !== null ? `${sensorManager.rawGamma}°` : '--';
+
+        // 3. Calculated Tilt Angles
+        if (dbgTiltX) dbgTiltX.textContent = `${(sensorManager.calculatedTiltX >= 0 ? '+' : '')}${sensorManager.calculatedTiltX.toFixed(1)}°`;
+        if (dbgTiltY) dbgTiltY.textContent = `${(sensorManager.calculatedTiltY >= 0 ? '+' : '')}${sensorManager.calculatedTiltY.toFixed(1)}°`;
+
+        // 4. Gravity Vector
+        if (dbgGravX) dbgGravX.textContent = sensorManager.gravityX !== null ? `${sensorManager.gravityX}` : '--';
+        if (dbgGravY) dbgGravY.textContent = sensorManager.gravityY !== null ? `${sensorManager.gravityY}` : '--';
+
+        // 5. Visual Tilt Meter indicator:
+        // Left -30° => 5%, Center 0° => 50%, Right +30° => 95%
+        if (dbgMeterBar) {
+          const clampedTilt = Math.max(-30, Math.min(30, sensorManager.calculatedTiltX));
+          const pct = Math.max(5, Math.min(95, 50 + (clampedTilt / 30) * 45));
+          dbgMeterBar.style.left = `${pct}%`;
+        }
+
+        // 6. Timestamp
+        if (dbgTimestamp) {
+          const msAgo = sensorManager.lastEventMs > 0 ? Math.round(performance.now() - sensorManager.lastEventMs) : null;
+          dbgTimestamp.textContent = msAgo !== null ? `${sensorManager.lastUpdateTimestamp} (${msAgo}ms ago)` : 'waiting...';
+        }
+      }
+
+      // Run real-time debug updater continuously every 50ms (20fps) even on menu
+      setInterval(updateDebugPanel, 50);
+
+      // Debug Panel controls
+      const dbgPermBtn = document.getElementById('dbg-perm-btn');
+      dbgPermBtn?.addEventListener('click', () => {
+        sensorManager.requestAccess();
+      });
+
+      const debugToggleBtn = document.getElementById('debug-toggle-btn');
+      const debugBody = document.getElementById('debug-body');
+      debugToggleBtn?.addEventListener('click', () => {
+        if (debugBody) {
+          const isHidden = debugBody.classList.contains('hidden');
+          if (isHidden) {
+            debugBody.classList.remove('hidden');
+            debugToggleBtn.textContent = 'Hide';
+          } else {
+            debugBody.classList.add('hidden');
+            debugToggleBtn.textContent = 'Show';
+          }
+        }
+      });
+
+      // Main 60fps Physics & Render Loop
+      let lastTime = performance.now();
+      let animFrameId: number | null = null;
+
+      function renderLoop(now: number) {
+        const dt = Math.min((now - lastTime) / 1000, 0.05);
+        lastTime = now;
+
+        // Feed REAL physical hardware tilt into liquid physics
+        const rollRad = (sensorManager.calculatedTiltX * Math.PI) / 180;
+
+        if (liquidRenderer) {
+          liquidRenderer.update(rollRad, dt);
+          liquidRenderer.draw();
+        }
+
+        // Physical drinking gesture detection
+        if (sensorManager.isTiltedToDrink() && canSip && sipsTaken < MAX_SIPS && !isFinished) {
+          canSip = false;
+          takeSip();
+        }
+
+        // Re-arm drinking trigger once phone is lowered
+        if (!canSip && sensorManager.isPhoneLowered()) {
+          canSip = true;
+        }
+
+        // Live HUD Sensor Feedback: Show current tilt & pitch angles directly on card
+        if (sipCardDesc && !isFinished) {
+          if (sensorManager.status === 'active') {
+            const tilt = Math.round(sensorManager.calculatedTiltX);
+            const pitch = Math.round(sensorManager.calculatedTiltY);
+            sipCardDesc.textContent = `📐 Tilt: ${tilt}° | Pitch: ${pitch}° — Muh ke paas tilt karo sip ke liye!`;
+          } else {
+            sipCardDesc.textContent = `Hold phone like a real glass & tilt to mouth! (Or tap glass to sip)`;
+          }
+        }
+
+        // Overflow spout pouring visual if tilted extreme left or right
+        if (liquidRenderer && liquidRenderer.juiceLevel > 0.05 && !isFinished) {
+          const leftNode = liquidRenderer.nodes[0];
+          const rightNode = liquidRenderer.nodes[liquidRenderer.nodeCount - 1];
+          if (leftNode && leftNode.y <= liquidRenderer.topRimY + 8) {
+            pourStreamLeft?.classList.remove('opacity-0');
+          } else {
+            pourStreamLeft?.classList.add('opacity-0');
+          }
+          if (rightNode && rightNode.y <= liquidRenderer.topRimY + 8) {
+            pourStreamRight?.classList.remove('opacity-0');
+          } else {
+            pourStreamRight?.classList.add('opacity-0');
+          }
+        } else {
+          pourStreamLeft?.classList.add('opacity-0');
+          pourStreamRight?.classList.add('opacity-0');
+        }
+
+        animFrameId = requestAnimationFrame(renderLoop);
+      }
+
+      function takeSip() {
+        if (sipsTaken >= MAX_SIPS || isFinished) return;
+        sipsTaken++;
+        soundEngine.playGulp();
+
+        if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+          try {
+            navigator.vibrate([60, 30, 60]);
+          } catch {}
+        }
+
+        if (sipCountBadge) {
+          sipCountBadge.textContent = `${sipsTaken}/${MAX_SIPS}`;
+        }
+
+        showToast(`🥤 Chuski ${sipsTaken}/${MAX_SIPS} Li! Maza Aa Gaya`);
+
+        // Liquid drains by 25% with dynamic slosh splash
+        if (liquidRenderer) {
+          liquidRenderer.targetJuiceLevel = Math.max(0, 1 - sipsTaken / MAX_SIPS);
+          liquidRenderer.splash(0.5, 12.0); // Big wave splash on sip
+        }
+
+        // Automatic re-arm cooldown so sip is never blocked
+        setTimeout(() => {
+          canSip = true;
+        }, 1300);
+
+        if (sipsTaken >= MAX_SIPS) {
+          isFinished = true;
+          soundEngine.playCheers();
+          if (sipCardTitle) sipCardTitle.textContent = 'GLASS KHATAM! 🎉';
+          if (sipCardDesc) sipCardDesc.textContent = 'Sukoon: 100% Guaranteed ☀️';
+          if (sipCountBadge) sipCountBadge.textContent = '4/4';
+          sipTapCard?.classList.add('hidden');
+          finishReplayBtn?.classList.remove('hidden');
+          finishReplayBtn?.classList.add('flex');
+        }
+      }
+
+      function resetGlass() {
+        sipsTaken = 0;
+        isFinished = false;
+        canSip = true;
+        if (sipCountBadge) sipCountBadge.textContent = `0/${MAX_SIPS}`;
+        if (sipCardTitle) sipCardTitle.textContent = 'Chuski Lo — Asli Sukoon';
+        if (sipCardDesc) sipCardDesc.textContent = 'Hold the phone like a real glass and tilt it towards your mouth to sip!';
+        sipTapCard?.classList.remove('hidden');
+        finishReplayBtn?.classList.add('hidden');
+        finishReplayBtn?.classList.remove('flex');
+        if (liquidRenderer) {
+          liquidRenderer.targetJuiceLevel = 1.0;
+          liquidRenderer.juiceLevel = 1.0;
+          liquidRenderer.initNodes();
+        }
+      }
+
+      // Tap on bottom card to sip
+      sipTapCard?.addEventListener('click', () => {
+        if (sipsTaken < MAX_SIPS) {
+          takeSip();
+        }
+      });
+
+      resetBtn?.addEventListener('click', () => {
+        soundEngine.playClick();
+        resetGlass();
+      });
+
+      finishReplayBtn?.addEventListener('click', () => {
+        soundEngine.playClick();
+        resetGlass();
+      });
+
+      // Transition from Menu to Full-Screen Drinking View
+      openGlassBtn?.addEventListener('click', () => {
+        sensorManager.requestAccess();
+        soundEngine.playClick();
+
+        viewMenu?.classList.add('hidden');
+        viewDrinking?.classList.remove('hidden');
+        viewDrinking?.classList.add('block');
+
+        if (sipFlavorIcon) {
+          sipFlavorIcon.textContent = selectedFlavor === 'kesar' ? '👑' : selectedFlavor === 'nimbu' ? '🍋' : '🌾';
+        }
+
+        resetGlass();
+        if (liquidRenderer) {
+          liquidRenderer.resize();
+        }
+
+        if (!animFrameId) {
+          lastTime = performance.now();
+          animFrameId = requestAnimationFrame(renderLoop);
+        }
+      });
+
+      backToMenuBtn?.addEventListener('click', () => {
+        soundEngine.playClick();
+        viewDrinking?.classList.add('hidden');
+        viewDrinking?.classList.remove('block');
+        viewMenu?.classList.remove('hidden');
+      });
+
+      // Tap on glass directly to sip (Zero fake roll simulation)
+      let dragStartX = 0;
+      let dragStartY = 0;
+      let totalDragDist = 0;
+
+      window.addEventListener('pointerdown', (e) => {
+        // Any first tap/touch registers user-gesture and triggers sensor permission & listeners
+        sensorManager.requestAccess();
+        if (viewDrinking?.classList.contains('hidden')) return;
+        const target = e.target as HTMLElement;
+        if (target.closest('button') || target.closest('#sip-tap-card') || target.closest('#jukebox-pill') || target.closest('#sensor-debug-panel')) return;
+        dragStartX = e.clientX;
+        dragStartY = e.clientY;
+        totalDragDist = 0;
+      });
+
+      window.addEventListener('pointermove', (e) => {
+        const deltaX = e.clientX - dragStartX;
+        const deltaY = e.clientY - dragStartY;
+        totalDragDist = Math.max(totalDragDist, Math.hypot(deltaX, deltaY));
+      });
+
+      window.addEventListener('pointerup', () => {
+        if (viewDrinking?.classList.contains('hidden')) return;
+        if (totalDragDist < 8 && sipsTaken < MAX_SIPS && !isFinished) {
+          takeSip();
+        }
+      });
+
+      // Initialize Menu View
+      updateMenuUI();
+    </script>
+  </body>
+</html>

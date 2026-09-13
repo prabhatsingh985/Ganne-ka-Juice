@@ -1,0 +1,237 @@
+---
+// JuiceGlass.astro - Desi Cutting Glass Tumbler Component
+// Features realistic glass reflections, vertical ribs, dynamic liquid fill level,
+// foam head with bubbles, and toggleable garnishes (nimbu, barf, pudina, adrak, masala, kesar).
+---
+
+<div class="relative w-full max-w-[260px] mx-auto flex flex-col items-center select-none">
+  <!-- Squeezed Lemon Animation Overlay (Appears briefly when nimbu is toggled) -->
+  <div
+    id="lemon-squeeze-anim"
+    class="absolute -top-12 z-30 pointer-events-none opacity-0 scale-75 transition-all duration-500 flex flex-col items-center"
+  >
+    <div class="text-4xl animate-bounce">🍋💦</div>
+    <div class="text-xs font-display font-bold text-cane-dark bg-yellow-100 px-2 py-0.5 rounded-full border border-yellow-400 shadow-sm">
+      Nimbu Nichod Diya!
+    </div>
+  </div>
+
+  <!-- Glass Container with dynamic tilt transform -->
+  <div
+    id="glass-tilt-wrapper"
+    class="relative w-full aspect-[3/4] flex items-center justify-center transition-transform duration-300 origin-bottom"
+    style="transform: rotate(0deg);"
+  >
+    <svg
+      id="glass-svg"
+      viewBox="0 0 200 280"
+      class="w-full h-full drop-shadow-2xl overflow-visible"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <defs>
+        <!-- Glass Contour Clip Path (Tapered classic Indian roadside tumbler) -->
+        <clipPath id="glassInteriorClip">
+          <polygon points="35,25 165,25 150,250 50,250" />
+        </clipPath>
+
+        <!-- Fresh Sugarcane Juice Gradient -->
+        <linearGradient id="juiceLiquidGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#FFE26A" />
+          <stop offset="35%" stop-color="#E8B923" />
+          <stop offset="70%" stop-color="#B8860B" />
+          <stop offset="100%" stop-color="#7B5804" />
+        </linearGradient>
+
+        <!-- Kesar Royal Golden-Amber Saffron Gradient (When Kesar is unlocked/active) -->
+        <linearGradient id="kesarLiquidGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#FFD166" />
+          <stop offset="30%" stop-color="#FF9933" />
+          <stop offset="70%" stop-color="#E65100" />
+          <stop offset="100%" stop-color="#BF360C" />
+        </linearGradient>
+
+        <!-- Creamy Froth Gradient -->
+        <linearGradient id="foamGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#FFFBEB" stop-opacity="0.95" />
+          <stop offset="50%" stop-color="#FEF3C7" stop-opacity="0.98" />
+          <stop offset="100%" stop-color="#FFFBEB" stop-opacity="0.95" />
+        </linearGradient>
+
+        <!-- Glass Wall Specular Highlight -->
+        <linearGradient id="glassSpecular" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.6" />
+          <stop offset="25%" stop-color="#FFFFFF" stop-opacity="0.1" />
+          <stop offset="70%" stop-color="#FFFFFF" stop-opacity="0.05" />
+          <stop offset="90%" stop-color="#FFFFFF" stop-opacity="0.4" />
+          <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.7" />
+        </linearGradient>
+
+        <!-- Ice Cube Translucent Gradient -->
+        <linearGradient id="iceGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.85" />
+          <stop offset="50%" stop-color="#E0F2FE" stop-opacity="0.55" />
+          <stop offset="100%" stop-color="#BAE6FD" stop-opacity="0.8" />
+        </linearGradient>
+      </defs>
+
+      <!-- Glass Background Shadow -->
+      <ellipse cx="100" cy="256" rx="55" ry="10" fill="rgba(84, 50, 26, 0.2)" />
+
+      <!-- Outer Glass Body (Thick Heavy Glass Base) -->
+      <polygon
+        points="32,20 168,20 152,255 48,255"
+        fill="rgba(255, 255, 255, 0.15)"
+        stroke="#7A4B2A"
+        stroke-width="3"
+        stroke-linejoin="round"
+      />
+      <!-- Heavy Solid Glass Bottom -->
+      <polygon points="48,242 152,242 150,254 50,254" fill="rgba(255, 255, 255, 0.4)" />
+
+      <!-- Inside Glass Contents (Clipped to interior) -->
+      <g clip-path="url(#glassInteriorClip)">
+        <!-- Empty Glass Background Tint -->
+        <rect x="0" y="0" width="200" height="280" fill="rgba(243, 233, 205, 0.25)" />
+
+        <!-- Liquid Container (Y position animates up as glass fills) -->
+        <!-- Glass bottom is at y=250, top is at y=35. Total height = 215px. -->
+        <g id="juice-fill-level" class="transition-all duration-300" transform="translate(0, 215)">
+          <!-- Juice Liquid Body -->
+          <rect
+            id="liquid-rect"
+            x="0"
+            y="35"
+            width="200"
+            height="215"
+            fill="url(#juiceLiquidGrad)"
+          />
+
+          <!-- Rising Carbonation & Juice Bubbles -->
+          <g id="rising-bubbles" opacity="0.8">
+            <circle cx="65" cy="180" r="2.5" fill="#FFFBEB" class="animate-bounce" />
+            <circle cx="135" cy="195" r="3" fill="#FFFBEB" class="animate-bounce" />
+            <circle cx="95" cy="140" r="2" fill="#FFFBEB" class="animate-bounce" />
+            <circle cx="115" cy="85" r="3.5" fill="#FFFBEB" class="animate-bounce" />
+            <circle cx="75" cy="65" r="2" fill="#FFFBEB" class="animate-bounce" />
+            <circle cx="140" cy="50" r="2.5" fill="#FFFBEB" class="animate-bounce" />
+          </g>
+
+          <!-- Floating Kala Namak Masala Dark Specks -->
+          <g id="garnish-masala" class="hidden">
+            <circle cx="58" cy="45" r="1.5" fill="#3D1A1A" />
+            <circle cx="78" cy="55" r="2" fill="#2B1414" />
+            <circle cx="92" cy="42" r="1.8" fill="#401B1B" />
+            <circle cx="112" cy="52" r="1.5" fill="#2B1414" />
+            <circle cx="128" cy="46" r="2" fill="#3D1A1A" />
+            <circle cx="145" cy="54" r="1.6" fill="#2B1414" />
+            <circle cx="85" cy="70" r="1.5" fill="#3D1A1A" />
+            <circle cx="120" cy="72" r="1.8" fill="#2B1414" />
+          </g>
+
+          <!-- Floating Ginger Slices (Adrak) -->
+          <g id="garnish-adrak" class="hidden">
+            <ellipse cx="75" cy="56" rx="14" ry="7" fill="#E2C992" stroke="#B89758" stroke-width="1.5" transform="rotate(-10 75 56)" />
+            <circle cx="75" cy="56" r="2" fill="#9C7736" opacity="0.4" />
+            <ellipse cx="125" cy="62" rx="13" ry="6" fill="#E2C992" stroke="#B89758" stroke-width="1.5" transform="rotate(15 125 62)" />
+          </g>
+
+          <!-- Floating Mint Leaves (Pudina) -->
+          <g id="garnish-pudina" class="hidden">
+            <g transform="translate(62, 38) rotate(-20)">
+              <path d="M0,8 C-8,4 -6,-4 0,-8 C6,-4 8,4 0,8 Z" fill="#48BB78" stroke="#22543D" stroke-width="1" />
+              <line x1="0" y1="-7" x2="0" y2="7" stroke="#1C4532" stroke-width="0.8" />
+            </g>
+            <g transform="translate(136, 42) rotate(25)">
+              <path d="M0,9 C-9,5 -7,-4 0,-9 C7,-4 9,5 0,9 Z" fill="#38A169" stroke="#1C4532" stroke-width="1" />
+              <line x1="0" y1="-8" x2="0" y2="8" stroke="#133324" stroke-width="0.8" />
+            </g>
+          </g>
+
+          <!-- Floating Translucent Ice Cubes (Barf) -->
+          <g id="garnish-barf" class="hidden">
+            <!-- Ice cube 1 -->
+            <g transform="translate(56, 42) rotate(12)">
+              <polygon points="0,6 18,0 32,8 14,14" fill="url(#iceGrad)" stroke="#FFFFFF" stroke-width="1.2" />
+              <polygon points="0,6 14,14 14,30 0,22" fill="url(#iceGrad)" stroke="#BAE6FD" stroke-width="1.2" />
+              <polygon points="14,14 32,8 32,24 14,30" fill="url(#iceGrad)" stroke="#90CDF4" stroke-width="1.2" />
+            </g>
+            <!-- Ice cube 2 -->
+            <g transform="translate(108, 48) rotate(-16)">
+              <polygon points="0,5 16,0 28,7 12,12" fill="url(#iceGrad)" stroke="#FFFFFF" stroke-width="1.2" />
+              <polygon points="0,5 12,12 12,26 0,19" fill="url(#iceGrad)" stroke="#BAE6FD" stroke-width="1.2" />
+              <polygon points="12,12 28,7 28,21 12,26" fill="url(#iceGrad)" stroke="#90CDF4" stroke-width="1.2" />
+            </g>
+          </g>
+
+          <!-- Saffron Strands & Royal Golden Sparkle (Kesar) -->
+          <g id="garnish-kesar" class="hidden">
+            <path d="M70,36 Q75,32 82,34" stroke="#DC2626" stroke-width="1.8" stroke-linecap="round" fill="none" />
+            <path d="M100,38 Q105,44 112,40" stroke="#DC2626" stroke-width="1.8" stroke-linecap="round" fill="none" />
+            <path d="M125,35 Q130,31 138,36" stroke="#DC2626" stroke-width="1.8" stroke-linecap="round" fill="none" />
+            <circle cx="85" cy="45" r="1.5" fill="#FFE26A" class="animate-ping" />
+            <circle cx="118" cy="42" r="1.5" fill="#FFE26A" class="animate-ping" />
+          </g>
+
+          <!-- Thick Foam Head (Dhaag / Malai on top of juice) -->
+          <g id="foam-head">
+            <ellipse cx="100" cy="35" rx="64" ry="11" fill="url(#foamGrad)" />
+            <!-- Foam bubbles cluster -->
+            <circle cx="60" cy="34" r="5" fill="#FFFBEB" />
+            <circle cx="72" cy="32" r="6" fill="#FEF3C7" />
+            <circle cx="86" cy="31" r="7" fill="#FFFFFF" />
+            <circle cx="100" cy="30" r="7.5" fill="#FFFBEB" />
+            <circle cx="114" cy="31" r="7" fill="#FEF3C7" />
+            <circle cx="128" cy="33" r="5.5" fill="#FFFFFF" />
+            <circle cx="140" cy="35" r="4.5" fill="#FFFBEB" />
+          </g>
+        </g>
+
+        <!-- Vertical Glass Ribs / Ridges (Authentic Indian Chai/Juice Tumbler pattern) -->
+        <g stroke="rgba(255, 255, 255, 0.28)" stroke-width="3.5" stroke-linecap="round">
+          <line x1="58" y1="40" x2="68" y2="235" />
+          <line x1="78" y1="40" x2="84" y2="235" />
+          <line x1="100" y1="40" x2="100" y2="235" />
+          <line x1="122" y1="40" x2="116" y2="235" />
+          <line x1="142" y1="40" x2="132" y2="235" />
+        </g>
+
+        <!-- Dynamic Specular Glass Reflection Sheen -->
+        <rect x="0" y="0" width="200" height="280" fill="url(#glassSpecular)" pointer-events="none" />
+      </g>
+
+      <!-- Glass Rim (Mouth of Tumbler) -->
+      <ellipse cx="100" cy="22" rx="66" ry="10" fill="none" stroke="#7A4B2A" stroke-width="3.5" />
+      <ellipse cx="100" cy="21" rx="64" ry="8.5" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0.8" />
+
+      <!-- Lemon Wedge Garnish on Glass Rim (Nimbu) -->
+      <g id="garnish-nimbu" class="hidden origin-top-left" transform="translate(142, 6)">
+        <!-- Outer lemon peel -->
+        <path d="M0,16 C12,0 28,4 34,22 Z" fill="#ECC94B" stroke="#D69E2E" stroke-width="1.8" />
+        <!-- Inner white pith -->
+        <path d="M3,16 C12,3 25,6 30,20 Z" fill="#FEFCBF" />
+        <!-- Lemon pulp segments -->
+        <path d="M5,16 C12,6 23,8 27,19 Z" fill="#F6E05E" />
+        <line x1="16" y1="13" x2="16" y2="18" stroke="#D69E2E" stroke-width="1" />
+        <line x1="10" y1="15" x2="22" y2="15" stroke="#D69E2E" stroke-width="1" />
+      </g>
+    </svg>
+  </div>
+
+  <!-- Juice Volume & Fill Status Meter -->
+  <div class="w-full mt-2 px-2 flex flex-col items-center">
+    <div class="flex items-center justify-between w-full text-xs font-display font-bold text-rust-dark">
+      <span id="glass-state-label">Khaali Glass (0ml)</span>
+      <span id="glass-percent-badge" class="px-2 py-0.5 rounded-full bg-cream-dark border border-rust-light text-rust-dark">
+        0%
+      </span>
+    </div>
+    <!-- Mini Progress Bar -->
+    <div class="w-full h-2.5 bg-cream-dark rounded-full overflow-hidden border border-rust mt-1 p-0.5 shadow-inner">
+      <div
+        id="glass-fill-bar"
+        class="h-full bg-gradient-to-r from-cane to-juice rounded-full transition-all duration-200"
+        style="width: 0%;"
+      ></div>
+    </div>
+  </div>
+</div>

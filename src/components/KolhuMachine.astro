@@ -1,0 +1,202 @@
+---
+// KolhuMachine.astro - Desi Sugarcane Crusher SVG Component
+// Interactive two-roller press with rotating gears, sugarcane stalk, and crank handle
+---
+
+<div class="relative w-full max-w-sm mx-auto select-none flex flex-col items-center">
+  <!-- Kolhu Structure Container -->
+  <div class="relative w-full aspect-[4/3] flex items-center justify-center">
+    <svg
+      id="kolhu-svg"
+      viewBox="0 0 400 300"
+      class="w-full h-full drop-shadow-xl overflow-visible"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <defs>
+        <!-- Metallic roller gradients -->
+        <linearGradient id="rollerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#4A5568" />
+          <stop offset="30%" stop-color="#A0AEC0" />
+          <stop offset="60%" stop-color="#718096" />
+          <stop offset="100%" stop-color="#2D3748" />
+        </linearGradient>
+
+        <!-- Sugarcane stalk gradient -->
+        <linearGradient id="caneGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#76B34A" />
+          <stop offset="40%" stop-color="#5B8C3A" />
+          <stop offset="70%" stop-color="#8DB600" />
+          <stop offset="100%" stop-color="#3E6126" />
+        </linearGradient>
+
+        <!-- Cast iron frame gradient -->
+        <linearGradient id="ironGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#8B5A2B" />
+          <stop offset="50%" stop-color="#54321A" />
+          <stop offset="100%" stop-color="#382010" />
+        </linearGradient>
+
+        <!-- Brass spout gradient -->
+        <linearGradient id="brassGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#F6E05E" />
+          <stop offset="60%" stop-color="#D69E2E" />
+          <stop offset="100%" stop-color="#B7791F" />
+        </linearGradient>
+
+        <!-- Fresh juice drop filter glow -->
+        <filter id="juiceGlow" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="2" result="blur" />
+          <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        </filter>
+      </defs>
+
+      <!-- Machine Base & Wooden Stand -->
+      <rect x="50" y="240" width="300" height="28" rx="6" fill="#7A4B2A" stroke="#452610" stroke-width="3" />
+      <rect x="70" y="244" width="260" height="6" rx="2" fill="#9E6237" />
+      <!-- Stand legs with bolts -->
+      <rect x="65" y="268" width="30" height="22" rx="3" fill="#54321A" />
+      <rect x="305" y="268" width="30" height="22" rx="3" fill="#54321A" />
+      <circle cx="80" cy="279" r="3" fill="#CBD5E0" />
+      <circle cx="320" cy="279" r="3" fill="#CBD5E0" />
+
+      <!-- Back Frame Uprights -->
+      <path d="M95,60 L125,60 L135,240 L85,240 Z" fill="url(#ironGrad)" stroke="#382010" stroke-width="2.5" />
+      <path d="M275,60 L305,60 L315,240 L265,240 Z" fill="url(#ironGrad)" stroke="#382010" stroke-width="2.5" />
+
+      <!-- Sugarcane Stalk (animates down into rollers) -->
+      <g id="sugarcane-stalk" class="transition-transform duration-200">
+        <!-- Stalk segments -->
+        <rect x="188" y="10" width="24" height="150" rx="6" fill="url(#caneGrad)" stroke="#294318" stroke-width="2" />
+        <!-- Cane nodes / rings -->
+        <line x1="188" y1="40" x2="212" y2="40" stroke="#FFE26A" stroke-width="2.5" />
+        <line x1="188" y1="75" x2="212" y2="75" stroke="#FFE26A" stroke-width="2.5" />
+        <line x1="188" y1="110" x2="212" y2="110" stroke="#FFE26A" stroke-width="2.5" />
+        <line x1="188" y1="140" x2="212" y2="140" stroke="#FFE26A" stroke-width="2.5" />
+        <!-- Cane leafy top -->
+        <path d="M190,10 C180,-10 160,-5 155,-2" stroke="#5B8C3A" stroke-width="3" fill="none" stroke-linecap="round" />
+        <path d="M200,10 C200,-15 215,-18 225,-12" stroke="#76B34A" stroke-width="3" fill="none" stroke-linecap="round" />
+      </g>
+
+      <!-- Two Heavy Crushing Rollers with Teeth/Grooves -->
+      <!-- Left Roller -->
+      <g id="roller-left" class="origin-[160px_150px]">
+        <rect x="135" y="115" width="50" height="70" rx="8" fill="url(#rollerGrad)" stroke="#2D3748" stroke-width="2.5" />
+        <!-- Grooves / Knurling -->
+        <line x1="140" y1="128" x2="180" y2="128" stroke="#1A202C" stroke-width="2" stroke-dasharray="3 3" />
+        <line x1="140" y1="140" x2="180" y2="140" stroke="#CBD5E0" stroke-width="1.5" />
+        <line x1="140" y1="150" x2="180" y2="150" stroke="#1A202C" stroke-width="2" stroke-dasharray="3 3" />
+        <line x1="140" y1="162" x2="180" y2="162" stroke="#CBD5E0" stroke-width="1.5" />
+        <line x1="140" y1="174" x2="180" y2="174" stroke="#1A202C" stroke-width="2" stroke-dasharray="3 3" />
+        <circle cx="160" cy="150" r="7" fill="#4A5568" stroke="#1A202C" stroke-width="2" />
+      </g>
+
+      <!-- Right Roller -->
+      <g id="roller-right" class="origin-[240px_150px]">
+        <rect x="215" y="115" width="50" height="70" rx="8" fill="url(#rollerGrad)" stroke="#2D3748" stroke-width="2.5" />
+        <!-- Grooves / Knurling -->
+        <line x1="220" y1="128" x2="260" y2="128" stroke="#1A202C" stroke-width="2" stroke-dasharray="3 3" />
+        <line x1="220" y1="140" x2="260" y2="140" stroke="#CBD5E0" stroke-width="1.5" />
+        <line x1="220" y1="150" x2="260" y2="150" stroke="#1A202C" stroke-width="2" stroke-dasharray="3 3" />
+        <line x1="220" y1="162" x2="260" y2="162" stroke="#CBD5E0" stroke-width="1.5" />
+        <line x1="220" y1="174" x2="260" y2="174" stroke="#1A202C" stroke-width="2" stroke-dasharray="3 3" />
+        <circle cx="240" cy="150" r="7" fill="#4A5568" stroke="#1A202C" stroke-width="2" />
+      </g>
+
+      <!-- Front Steel Crossbars and Tension Screws -->
+      <rect x="90" y="80" width="220" height="20" rx="4" fill="url(#ironGrad)" stroke="#2D3748" stroke-width="2" />
+      <!-- Top Adjusting Tension T-screws -->
+      <g>
+        <path d="M150,65 L170,65 M160,65 L160,80" stroke="#CBD5E0" stroke-width="4" stroke-linecap="round" />
+        <path d="M230,65 L250,65 M240,65 L240,80" stroke="#CBD5E0" stroke-width="4" stroke-linecap="round" />
+      </g>
+
+      <!-- Bottom Collection Tray & Funnel -->
+      <path
+        d="M130,195 L270,195 L220,225 L180,225 Z"
+        fill="url(#brassGrad)"
+        stroke="#744210"
+        stroke-width="2"
+      />
+      <!-- Brass Spout -->
+      <path
+        d="M192,225 L208,225 L205,242 L195,242 Z"
+        fill="url(#brassGrad)"
+        stroke="#744210"
+        stroke-width="2"
+      />
+
+      <!-- Fresh Juice Droplets emerging from Spout -->
+      <g id="juice-drips" class="opacity-0 transition-opacity duration-150">
+        <circle cx="200" cy="252" r="4.5" fill="#E8B923" filter="url(#juiceGlow)" />
+        <circle cx="200" cy="268" r="3.5" fill="#F5CE42" filter="url(#juiceGlow)" />
+        <circle cx="200" cy="285" r="4" fill="#E8B923" />
+      </g>
+
+      <!-- Side Flywheel Gear behind handle -->
+      <g id="gear-flywheel" class="origin-[305px_150px]">
+        <circle cx="305" cy="150" r="42" fill="none" stroke="#54321A" stroke-width="8" />
+        <circle cx="305" cy="150" r="46" fill="none" stroke="#7A4B2A" stroke-width="3" stroke-dasharray="6 4" />
+        <!-- Spokes -->
+        <line x1="305" y1="108" x2="305" y2="192" stroke="#7A4B2A" stroke-width="5" />
+        <line x1="263" y1="150" x2="347" y2="150" stroke="#7A4B2A" stroke-width="5" />
+        <line x1="275" y1="120" x2="335" y2="180" stroke="#7A4B2A" stroke-width="4" />
+        <line x1="275" y1="180" x2="335" y2="120" stroke="#7A4B2A" stroke-width="4" />
+      </g>
+
+      <!-- Rotating Crank Handle & Grip (Center is at 305, 150) -->
+      <g
+        id="crank-handle-group"
+        class="origin-[305px_150px] cursor-grab active:cursor-grabbing transition-transform duration-75"
+        style="transform: rotate(0deg);"
+      >
+        <!-- Center Hub -->
+        <circle cx="305" cy="150" r="14" fill="#2D3748" stroke="#1A202C" stroke-width="3" />
+        <circle cx="305" cy="150" r="6" fill="#A0AEC0" />
+
+        <!-- Heavy Crank Arm -->
+        <path
+          d="M301,150 L301,65 A10,10 0 0,1 321,65 L321,150 Z"
+          fill="#4A5568"
+          stroke="#1A202C"
+          stroke-width="2.5"
+        />
+
+        <!-- Wooden Revolving Grip Handle -->
+        <g id="crank-grip" class="cursor-pointer">
+          <!-- Grip shadow -->
+          <ellipse cx="311" cy="65" rx="14" ry="12" fill="rgba(0,0,0,0.25)" />
+          <!-- Wooden Grip Cylinder -->
+          <rect x="300" y="45" width="22" height="38" rx="8" fill="#9E6237" stroke="#452610" stroke-width="2.5" />
+          <!-- Grip highlights & bands -->
+          <line x1="304" y1="52" x2="318" y2="52" stroke="#D69E2E" stroke-width="2" />
+          <line x1="304" y1="76" x2="318" y2="76" stroke="#D69E2E" stroke-width="2" />
+          <ellipse cx="311" cy="47" rx="7" ry="3" fill="#F6E05E" />
+          <!-- Tactile target indicator pulse -->
+          <circle cx="311" cy="64" r="18" fill="none" stroke="#E8B923" stroke-width="2.5" stroke-dasharray="4 3" class="animate-spin-wheel" opacity="0.8" />
+        </g>
+      </g>
+    </svg>
+
+    <!-- Tap helper pointer tooltip over the handle -->
+    <div
+      id="crank-hint-badge"
+      class="absolute top-2 right-4 pointer-events-none flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-juice text-rust-dark font-display font-bold text-xs shadow-desi-sm border-2 border-rust animate-bounce"
+    >
+      <span>Dabao!</span>
+      <span class="text-sm">👆</span>
+    </div>
+  </div>
+
+  <!-- Big Tactile Crank Button for Guaranteed Accessibility & Phone Tapping -->
+  <div class="w-full px-4 mt-2">
+    <button
+      id="crank-tap-btn"
+      type="button"
+      class="btn-desi w-full py-4 px-6 bg-gradient-to-r from-cane to-cane-light hover:from-cane-light hover:to-cane text-white flex items-center justify-center gap-3 text-lg sm:text-xl border-4 border-rust-border shadow-desi"
+    >
+      <span class="text-2xl animate-spin-wheel">⚙️</span>
+      <span>Ghumao & Ras Nikaalo!</span>
+      <span class="text-2xl">🌾</span>
+    </button>
+  </div>
+</div>

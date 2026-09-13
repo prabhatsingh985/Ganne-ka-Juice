@@ -1,0 +1,187 @@
+---
+// ReceiptParchi.astro - Realistic Indian Roadside Paper Parchi (Receipt)
+// Features jagged paper edges, vintage typewriter typography, itemized calculations,
+// and stamp watermark.
+---
+
+<div class="relative w-full max-w-sm mx-auto select-none">
+  <!-- Parchi Shadow & Paper Container -->
+  <div class="relative bg-white text-zinc-900 shadow-2xl p-6 border-x-2 border-zinc-200 font-mono text-xs">
+    <!-- Top Jagged Tear Edge (SVG Teeth) -->
+    <div class="absolute -top-3 left-0 w-full overflow-hidden leading-none z-10">
+      <svg viewBox="0 0 400 12" class="w-full h-3 fill-white" preserveAspectRatio="none">
+        <polygon points="0,12 10,0 20,12 30,0 40,12 50,0 60,12 70,0 80,12 90,0 100,12 110,0 120,12 130,0 140,12 150,0 160,12 170,0 180,12 190,0 200,12 210,0 220,12 230,0 240,12 250,0 260,12 270,0 280,12 290,0 300,12 310,0 320,12 330,0 340,12 350,0 360,12 370,0 380,12 390,0 400,12" />
+      </svg>
+    </div>
+
+    <!-- Header / Shop Title -->
+    <div class="text-center border-b-2 border-dashed border-zinc-400 pb-3 mb-3">
+      <div class="inline-block px-2 py-0.5 rounded bg-zinc-900 text-white font-bold text-[10px] tracking-widest uppercase mb-1">
+        ★ ORIGINAL ROAD TAPRI ★
+      </div>
+      <h3 class="font-display font-black text-2xl tracking-tight text-zinc-900 leading-none">
+        GANNA BAAR
+      </h3>
+      <p class="text-[11px] font-bold text-zinc-600 tracking-wide mt-0.5">
+        ठेला नं. 01 • ताज़ा गन्ने का रस
+      </p>
+      <p class="text-[10px] text-zinc-500 italic mt-0.5">
+        "Seedha Kolhu Se, Seedha Glass Tak"
+      </p>
+    </div>
+
+    <!-- Meta Information (Token, Date, Time) -->
+    <div class="border-b border-dashed border-zinc-300 pb-2 mb-3 text-[11px] space-y-1">
+      <div class="flex justify-between font-bold">
+        <span>TOKEN NO:</span>
+        <span id="parchi-token" class="text-cane-dark text-sm">#GB-042</span>
+      </div>
+      <div class="flex justify-between text-zinc-600">
+        <span>DATE:</span>
+        <span id="parchi-date">13-SEP-2026</span>
+      </div>
+      <div class="flex justify-between text-zinc-600">
+        <span>TIME:</span>
+        <span id="parchi-time">18:30:00 IST</span>
+      </div>
+      <div class="flex justify-between text-zinc-600">
+        <span>ORDER TYPE:</span>
+        <span class="font-bold text-zinc-800">DINE-IN (KHAADE KHAADE)</span>
+      </div>
+    </div>
+
+    <!-- Itemized Order Table -->
+    <div class="border-b-2 border-dashed border-zinc-400 pb-3 mb-3">
+      <div class="flex justify-between font-bold text-[11px] text-zinc-500 border-b border-zinc-200 pb-1 mb-2">
+        <span class="w-1/2">MAD / ITEM</span>
+        <span class="w-1/4 text-center">SIZE</span>
+        <span class="w-1/4 text-right">KIMAT</span>
+      </div>
+
+      <!-- Main Item Row -->
+      <div class="flex justify-between items-start font-bold text-xs py-1">
+        <div class="w-1/2">
+          <span id="parchi-item-name" class="block leading-tight text-zinc-900">Classic Saada Ganna</span>
+          <span id="parchi-item-desc" class="block text-[10px] font-normal text-zinc-500 leading-tight">Shuddh Nectar</span>
+        </div>
+        <div class="w-1/4 text-center">
+          <span id="parchi-item-size" class="px-1.5 py-0.5 rounded bg-zinc-100 border border-zinc-300 text-[10px]">
+            Bada Glass
+          </span>
+        </div>
+        <div class="w-1/4 text-right font-bold text-zinc-900">
+          <span id="parchi-base-price">₹25</span>
+        </div>
+      </div>
+
+      <!-- Add-ons Sub-list -->
+      <div id="parchi-addons-list" class="space-y-1 mt-1 pt-1 border-t border-zinc-100 text-[11px] text-zinc-600">
+        <!-- Dynamically populated -->
+        <div class="flex justify-between italic">
+          <span>+ Nimbu Squeeze</span>
+          <span>₹0</span>
+        </div>
+        <div class="flex justify-between italic">
+          <span>+ Chilled Barf (Ice)</span>
+          <span>₹0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Totals & Calculations -->
+    <div class="space-y-1.5 border-b-2 border-dashed border-zinc-400 pb-3 mb-3 text-xs">
+      <div class="flex justify-between text-zinc-600">
+        <span>Kaccha Total:</span>
+        <span id="parchi-subtotal">₹25</span>
+      </div>
+      <div class="flex justify-between text-emerald-700 font-bold text-[11px]">
+        <span>Bhai-Chara Discount (100% Love):</span>
+        <span>-₹0</span>
+      </div>
+      <div class="flex justify-between text-zinc-600 text-[11px]">
+        <span>Tapri GST (Garam Chai/Ganna):</span>
+        <span>₹0 (Govt Exempt)</span>
+      </div>
+      <!-- Grand Total -->
+      <div class="flex justify-between items-center pt-2 border-t border-zinc-300 font-bold text-base text-zinc-900">
+        <span class="tracking-tight">KUL RAKAM (TOTAL):</span>
+        <span id="parchi-grand-total" class="text-xl text-cane-dark font-black font-display">₹25</span>
+      </div>
+    </div>
+
+    <!-- Stamp Watermark (PAID / RAS TAIYAAR) -->
+    <div class="relative py-2 flex items-center justify-center">
+      <div
+        id="parchi-stamp"
+        class="border-4 border-emerald-600 text-emerald-700 font-display font-black text-sm uppercase px-3 py-1 rounded-lg transform -rotate-12 tracking-widest opacity-85 shadow-sm"
+      >
+        ★ 100% ASLI SUKOON ★
+      </div>
+    </div>
+
+    <!-- Roadside Barcode Graphic (SVG) -->
+    <div class="my-2 flex flex-col items-center">
+      <svg class="w-48 h-8" viewBox="0 0 200 35" fill="#18181b">
+        <rect x="0" y="0" width="4" height="35" />
+        <rect x="7" y="0" width="2" height="35" />
+        <rect x="12" y="0" width="6" height="35" />
+        <rect x="22" y="0" width="3" height="35" />
+        <rect x="28" y="0" width="5" height="35" />
+        <rect x="36" y="0" width="2" height="35" />
+        <rect x="42" y="0" width="8" height="35" />
+        <rect x="54" y="0" width="3" height="35" />
+        <rect x="61" y="0" width="5" height="35" />
+        <rect x="70" y="0" width="2" height="35" />
+        <rect x="76" y="0" width="6" height="35" />
+        <rect x="86" y="0" width="4" height="35" />
+        <rect x="94" y="0" width="2" height="35" />
+        <rect x="100" y="0" width="7" height="35" />
+        <rect x="111" y="0" width="3" height="35" />
+        <rect x="118" y="0" width="5" height="35" />
+        <rect x="126" y="0" width="2" height="35" />
+        <rect x="132" y="0" width="8" height="35" />
+        <rect x="144" y="0" width="3" height="35" />
+        <rect x="151" y="0" width="6" height="35" />
+        <rect x="161" y="0" width="2" height="35" />
+        <rect x="167" y="0" width="5" height="35" />
+        <rect x="176" y="0" width="4" height="35" />
+        <rect x="184" y="0" width="3" height="35" />
+        <rect x="192" y="0" width="6" height="35" />
+      </svg>
+      <span class="text-[9px] text-zinc-500 tracking-widest mt-0.5">8901234567890-GANNA</span>
+    </div>
+
+    <!-- Parchi Footer Tagline -->
+    <div class="text-center pt-2 border-t border-dashed border-zinc-300 text-[10px] text-zinc-500 space-y-0.5">
+      <p class="font-bold text-zinc-700">Shukriya! Dobara Zaroor Padharein 🙏</p>
+      <p>Ras kharab lage to kolhu wale bhaiya ko complaint karein 😄</p>
+    </div>
+
+    <!-- Bottom Jagged Tear Edge (SVG Teeth) -->
+    <div class="absolute -bottom-3 left-0 w-full overflow-hidden leading-none z-10 rotate-180">
+      <svg viewBox="0 0 400 12" class="w-full h-3 fill-white" preserveAspectRatio="none">
+        <polygon points="0,12 10,0 20,12 30,0 40,12 50,0 60,12 70,0 80,12 90,0 100,12 110,0 120,12 130,0 140,12 150,0 160,12 170,0 180,12 190,0 200,12 210,0 220,12 230,0 240,12 250,0 260,12 270,0 280,12 290,0 300,12 310,0 320,12 330,0 340,12 350,0 360,12 370,0 380,12 390,0 400,12" />
+      </svg>
+    </div>
+  </div>
+
+  <!-- Parchi Action Buttons (Print & Share) -->
+  <div class="mt-4 flex gap-2 w-full">
+    <button
+      id="print-parchi-btn"
+      type="button"
+      class="flex-1 py-2.5 px-3 bg-white hover:bg-zinc-50 text-zinc-800 rounded-xl border-2 border-zinc-400 font-display font-bold text-xs shadow-sm flex items-center justify-center gap-1.5 transition-transform active:scale-95 cursor-pointer"
+    >
+      <span>🖨️</span>
+      <span>Parchi Print / Save</span>
+    </button>
+    <button
+      id="share-parchi-btn"
+      type="button"
+      class="flex-1 py-2.5 px-3 bg-cane hover:bg-cane-dark text-white rounded-xl border-2 border-cane-dark font-display font-bold text-xs shadow-sm flex items-center justify-center gap-1.5 transition-transform active:scale-95 cursor-pointer"
+    >
+      <span>📤</span>
+      <span>Doston ko Bhejo</span>
+    </button>
+  </div>
+</div>
