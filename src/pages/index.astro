@@ -54,144 +54,6 @@ import '../styles/global.css';
     </div>
 
     <!-- ========================================================= -->
-    <!-- REAL-TIME SENSOR-DEBUG PANEL (REQUIRED FOR VERIFICATION) -->
-    <!-- ========================================================= -->
-    <aside
-      id="sensor-debug-panel"
-      class="fixed top-2 left-2 right-2 sm:right-auto sm:left-4 sm:w-84 z-50 bg-[#091206]/95 border-2 border-lime-500/80 rounded-2xl p-3 text-xs font-mono shadow-2xl backdrop-blur-md select-text transition-all"
-    >
-      <div class="flex items-center justify-between border-b border-lime-500/30 pb-1.5 mb-2">
-        <div class="flex items-center gap-1.5 font-bold text-lime-400">
-          <span class="animate-pulse">📡</span>
-          <span>SENSOR DEBUGGER</span>
-        </div>
-        <div class="flex items-center gap-1.5">
-          <span id="dbg-pulse-dot" class="w-2 h-2 rounded-full bg-zinc-600"></span>
-          <button id="debug-toggle-btn" type="button" class="text-zinc-400 hover:text-white px-2 py-0.5 rounded bg-zinc-800 text-[10px] cursor-pointer">
-            Hide
-          </button>
-        </div>
-      </div>
-
-      <div id="debug-body" class="space-y-1.5 text-zinc-300">
-        <!-- Status Row -->
-        <div class="flex justify-between items-center bg-black/50 px-2 py-1 rounded-lg">
-          <span class="text-zinc-400 text-[11px]">Sensor Status:</span>
-          <span id="dbg-status" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
-            CHECKING...
-          </span>
-        </div>
-
-        <div class="flex justify-between items-center text-[10px] px-1">
-          <span class="text-zinc-400">Source API:</span>
-          <span id="dbg-source" class="text-zinc-200 font-bold">none</span>
-        </div>
-
-        <!-- Raw Alpha / Beta / Gamma -->
-        <div class="grid grid-cols-3 gap-1 text-center bg-black/60 p-1.5 rounded-lg border border-zinc-800">
-          <div>
-            <div class="text-[9px] text-zinc-500 uppercase">alpha</div>
-            <div id="dbg-alpha" class="font-bold text-zinc-200 text-xs">--</div>
-          </div>
-          <div>
-            <div class="text-[9px] text-zinc-500 uppercase">beta</div>
-            <div id="dbg-beta" class="font-bold text-zinc-200 text-xs">--</div>
-          </div>
-          <div>
-            <div class="text-[9px] text-zinc-500 uppercase">gamma</div>
-            <div id="dbg-gamma" class="font-bold text-zinc-200 text-xs">--</div>
-          </div>
-        </div>
-
-        <!-- Calculated Tilt X & Y -->
-        <div class="grid grid-cols-2 gap-1.5 bg-black/60 p-1.5 rounded-lg border border-zinc-800">
-          <div>
-            <span class="text-[9px] text-zinc-400 block">Calc Tilt X (Roll):</span>
-            <span id="dbg-tilt-x" class="text-sm font-bold text-lime-400">0.0°</span>
-          </div>
-          <div>
-            <span class="text-[9px] text-zinc-400 block">Calc Tilt Y (Pitch):</span>
-            <span id="dbg-tilt-y" class="text-sm font-bold text-amber-400">0.0°</span>
-          </div>
-        </div>
-
-        <!-- Gravity X & Y -->
-        <div class="grid grid-cols-2 gap-1.5 bg-black/60 p-1.5 rounded-lg border border-zinc-800">
-          <div>
-            <span class="text-[9px] text-zinc-400 block">Gravity X (m/s²):</span>
-            <span id="dbg-grav-x" class="text-xs font-bold text-zinc-200">--</span>
-          </div>
-          <div>
-            <span class="text-[9px] text-zinc-400 block">Gravity Y (m/s²):</span>
-            <span id="dbg-grav-y" class="text-xs font-bold text-zinc-200">--</span>
-          </div>
-        </div>
-
-        <!-- Visual Tilt Meter Bar -->
-        <div class="bg-black/60 p-1.5 rounded-lg border border-zinc-800">
-          <div class="flex justify-between text-[8px] text-zinc-500 mb-0.5">
-            <span>◀ TILT LEFT 30°</span>
-            <span>CENTER</span>
-            <span>TILT RIGHT 30° ▶</span>
-          </div>
-          <div class="relative w-full h-2.5 bg-zinc-800 rounded-full overflow-hidden">
-            <div class="absolute top-0 bottom-0 left-1/2 w-0.5 bg-zinc-500 -translate-x-1/2"></div>
-            <div id="dbg-meter-bar" class="absolute top-0 bottom-0 w-3 bg-lime-400 rounded-full transition-all -translate-x-1/2" style="left: 50%;"></div>
-          </div>
-        </div>
-
-        <!-- Upside-Down Drinking Angle & Hysteresis State -->
-        <div class="bg-black/60 p-2 rounded-lg border border-zinc-800 space-y-1">
-          <div class="flex justify-between items-center">
-            <span class="text-[9px] text-zinc-400">Drinking State:</span>
-            <span id="dbg-drink-state" class="px-2 py-0.5 rounded text-[10px] font-bold bg-zinc-800 text-zinc-400 border border-zinc-700">
-              IDLE
-            </span>
-          </div>
-          <div class="flex justify-between items-center">
-            <span class="text-[9px] text-zinc-400">Upside-Down Angle:</span>
-            <span id="dbg-drink-angle" class="text-xs font-bold text-amber-300">0.0°</span>
-          </div>
-          <div class="text-[8px] text-zinc-500 flex justify-between">
-            <span>Start: ≥ 140° (Inverted)</span>
-            <span>Stop: &lt; 125°</span>
-          </div>
-          <!-- Inversion Progress Meter (0° to 180°) -->
-          <div class="relative w-full h-2 bg-zinc-800 rounded-full overflow-hidden">
-            <!-- 140° threshold indicator at (140/180) ≈ 77.7% -->
-            <div class="absolute top-0 bottom-0 left-[77.7%] w-0.5 bg-amber-400/80 z-10" title="Start Threshold 140°"></div>
-            <div id="dbg-drink-meter" class="h-full bg-lime-400 rounded-full transition-all" style="width: 0%;"></div>
-          </div>
-          <div class="flex justify-between items-center pt-0.5">
-            <span class="text-[9px] text-zinc-400">Juice Level:</span>
-            <span id="dbg-juice-level" class="text-xs font-bold text-lime-400">100%</span>
-          </div>
-        </div>
-
-        <!-- Timestamp & Event Counter -->
-        <div class="flex justify-between items-center text-[10px] text-zinc-500 px-1 pt-0.5">
-          <span>Last Update:</span>
-          <span id="dbg-timestamp" class="text-zinc-400 font-mono">waiting...</span>
-        </div>
-
-        <!-- User Permission Button -->
-        <button
-          id="dbg-perm-btn"
-          type="button"
-          class="w-full mt-1.5 py-2 px-3 rounded-xl bg-lime-500 hover:bg-lime-400 text-black font-display font-bold text-xs shadow-lg transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"
-        >
-          <span>⚡</span>
-          <span id="dbg-perm-btn-text">Request / Enable Sensor Access</span>
-        </button>
-
-        <!-- Warning message if non-secure context in Chrome Android -->
-        <div id="dbg-insecure-alert" class="hidden mt-1 p-1.5 rounded bg-rose-950/80 border border-rose-500/50 text-[10px] text-rose-300 leading-tight">
-          ⚠️ <strong>Non-Secure Origin:</strong> Chrome on Android disables motion sensors over plain <code>http://LAN-IP</code>. Open via HTTPS or localhost to enable.
-        </div>
-      </div>
-    </aside>
-
-    <!-- ========================================================= -->
     <!-- VIEW 1: MINIMALIST MENU SELECTION SCREEN (CHAI BAAR STYLE)-->
     <!-- ========================================================= -->
     <main id="view-menu" class="w-full max-w-md flex flex-col items-center text-center my-auto px-4 py-6 transition-all duration-300 z-10">
@@ -201,17 +63,30 @@ import '../styles/global.css';
           DESI TAPRI EXPERIENCE
         </div>
 
-        <!-- Lo-Fi Ambient Player -->
-        <button
-          id="lofi-toggle-btn"
-          type="button"
-          class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/40 hover:bg-black/60 border border-white/10 text-white text-xs font-mono backdrop-blur-md transition-all active:scale-95 cursor-pointer shadow-lg"
-          aria-label="Toggle Ambient Audio"
-        >
-          <span class="text-zinc-500 text-[10px]">⏭️</span>
-          <span id="lofi-icon" class="text-lime-400 text-xs">▶️</span>
-          <span id="lofi-text" class="text-[11px] font-medium text-zinc-200">Ganna Tapri – Later</span>
-        </button>
+        <div class="flex items-center gap-2">
+          <!-- Mute / Unmute Button -->
+          <button
+            id="menu-mute-btn"
+            type="button"
+            class="w-8 h-8 rounded-full border border-zinc-700 bg-black/50 hover:bg-black/70 backdrop-blur-md flex items-center justify-center text-sm cursor-pointer active:scale-95 transition-all shadow-md"
+            title="Mute / Unmute Sound"
+            aria-label="Toggle Sound"
+          >
+            <span id="menu-sound-icon">🔊</span>
+          </button>
+
+          <!-- Lo-Fi Ambient Player -->
+          <button
+            id="lofi-toggle-btn"
+            type="button"
+            class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/40 hover:bg-black/60 border border-white/10 text-white text-xs font-mono backdrop-blur-md transition-all active:scale-95 cursor-pointer shadow-lg"
+            aria-label="Toggle Ambient Audio"
+          >
+            <span class="text-zinc-500 text-[10px]">⏭️</span>
+            <span id="lofi-icon" class="text-lime-400 text-xs">▶️</span>
+            <span id="lofi-text" class="text-[11px] font-medium text-zinc-200">Ganna Tapri – Later</span>
+          </button>
+        </div>
       </div>
 
       <!-- Typography Header -->
@@ -564,21 +439,40 @@ import '../styles/global.css';
         if (lofiIcon) lofiIcon.textContent = isPlaying ? '⏸️' : '▶️';
         if (lofiText) lofiText.textContent = isPlaying ? 'Tapri Lo-Fi (Playing 🎵)' : 'Ganna Tapri – Later';
         if (jbPlayBtn) jbPlayBtn.textContent = isPlaying ? '⏸️' : '▶️';
-        if (soundIcon) soundIcon.textContent = isPlaying ? '🔊' : '🔇';
       }
 
+      function updateMuteUI(isMuted: boolean) {
+        if (soundIcon) soundIcon.textContent = isMuted ? '🔇' : '🔊';
+        const menuSoundIcon = document.getElementById('menu-sound-icon');
+        if (menuSoundIcon) menuSoundIcon.textContent = isMuted ? '🔇' : '🔊';
+      }
+
+      // Initialize mute state on page load (Default: Unmuted 🔊)
+      updateMuteUI(soundEngine.getMuted());
+
+      const menuMuteBtn = document.getElementById('menu-mute-btn');
+      menuMuteBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isMuted = soundEngine.toggleMute();
+        updateMuteUI(isMuted);
+        showToast(isMuted ? '🔇 Sound Muted' : '🔊 Sound Unmuted');
+      });
+
+      audioToggleBtn?.addEventListener('click', () => {
+        const isMuted = soundEngine.toggleMute();
+        updateMuteUI(isMuted);
+        showToast(isMuted ? '🔇 Sound Muted' : '🔊 Sound Unmuted');
+      });
+
       lofiToggleBtn?.addEventListener('click', () => {
+        soundEngine.playClick();
         const isPlaying = soundEngine.toggleLofi();
         updateAudioUI(isPlaying);
         showToast(isPlaying ? '🎵 Tapri Chill Lo-Fi Started' : 'Audio Paused');
       });
 
-      audioToggleBtn?.addEventListener('click', () => {
-        const isMuted = soundEngine.toggleMute();
-        updateAudioUI(!isMuted);
-      });
-
       jukeboxPill?.addEventListener('click', () => {
+        soundEngine.playClick();
         const isPlaying = soundEngine.toggleLofi();
         updateAudioUI(isPlaying);
       });
@@ -654,26 +548,25 @@ import '../styles/global.css';
         public gravityY: number | null = null;
         public gravityZ: number | null = null;
 
-        // Calculated tilt angles in degrees
-        // tiltX (Roll): negative when tilted left, positive when tilted right
-        // tiltY (Pitch): upright is ~65-80°, drinking tilt is >= 84°
-        public calculatedTiltX: number = 0; // Physical Roll (-45° to +45°)
-        public calculatedTiltY: number = 70; // Physical Pitch (0° flat to 90° upright)
+        // Smoothed physical orientation values
+        // smoothGamma (Roll): negative when tilted left, positive when tilted right
+        // smoothBeta (Pitch): upright is ~70-85°, flat is 0°, drinking tilt is >= 100°
+        public smoothGamma: number = 0;
+        public smoothBeta: number = 75;
+        public smoothAccY: number = 9.8;
 
-        // Normalized tilt (-1.0 to +1.0)
-        public normalizedTiltX: number = 0;
-        public normalizedTiltY: number = 0;
+        // Calibrated upright baselines
+        public baseBeta: number = 75;
+        public baseGamma: number = 0;
+        public baseAccY: number = 9.8;
+        public isCalibrated: boolean = false;
 
-        // Upside-Down Inversion Angle & Hysteresis Drinking State
-        public upsideDownAngle: number = 0; // 0° = upright vertical, 90° = flat/horizontal, 180° = upside down
+        // Calculated tilt for liquid sloshing
+        public calculatedTiltX: number = 0; // Roll in degrees
+        public calculatedTiltY: number = 75; // Pitch in degrees
+
+        // Upside-Down drinking state with strict physical hysteresis
         public isDrinking: boolean = false;
-        public readonly DRINK_START_THRESHOLD = 140; // Starts drinking when upside-down tilt >= 140°
-        public readonly DRINK_STOP_THRESHOLD = 125;  // Stops drinking when returning below 125°
-
-        public lastUpdateTimestamp: string = 'waiting...';
-        public lastEventMs: number = 0;
-        public eventCount: number = 0;
-        public isInsecureOrigin: boolean = false;
 
         private hasAttachedListeners = false;
         private lastFilterMs = performance.now();
@@ -684,8 +577,6 @@ import '../styles/global.css';
 
         public checkSupport() {
           if (typeof window === 'undefined') return;
-
-          this.isInsecureOrigin = !window.isSecureContext && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1';
 
           const hasOrient = 'DeviceOrientationEvent' in window;
           const hasMotion = 'DeviceMotionEvent' in window;
@@ -704,7 +595,6 @@ import '../styles/global.css';
           if (needsPermission) {
             this.status = 'permission-required';
           } else {
-            // Android / desktop browser: auto attach listeners
             this.attachListeners();
           }
         }
@@ -764,7 +654,7 @@ import '../styles/global.css';
             { passive: true }
           );
 
-          // 3. DeviceMotionEvent (accelerationIncludingGravity vector)
+          // 3. DeviceMotionEvent (accelerationIncludingGravity fallback)
           window.addEventListener(
             'devicemotion',
             (e: DeviceMotionEvent) => {
@@ -774,69 +664,51 @@ import '../styles/global.css';
           );
         }
 
+        public calibrate() {
+          this.baseBeta = this.smoothBeta;
+          this.baseGamma = this.smoothGamma;
+          this.baseAccY = this.smoothAccY;
+          this.isCalibrated = true;
+        }
+
         private handleOrientation(e: DeviceOrientationEvent, src: 'orientation' | 'orientationabsolute') {
-          if (e.alpha === null && e.beta === null && e.gamma === null) return;
+          if (e.beta === null || e.gamma === null) return;
 
           this.status = 'active';
           this.source = src;
-          this.eventCount++;
-          const now = performance.now();
-          this.lastEventMs = now;
-          this.formatTimestamp();
 
           this.rawAlpha = e.alpha !== null ? Math.round(e.alpha * 10) / 10 : null;
-          this.rawBeta = e.beta !== null ? Math.round(e.beta * 10) / 10 : null;
-          this.rawGamma = e.gamma !== null ? Math.round(e.gamma * 10) / 10 : null;
+          this.rawBeta = Math.round(e.beta * 10) / 10;
+          this.rawGamma = Math.round(e.gamma * 10) / 10;
 
-          // Account for portrait/landscape screen rotation
+          // Handle screen orientation rotation (portrait vs landscape)
           const screenAngle = (window.screen?.orientation?.angle) ?? ((window as any).orientation as number) ?? 0;
-          let roll = e.gamma ?? 0;
-          let pitch = e.beta ?? 0;
+          let roll = e.gamma;
+          let pitch = e.beta;
 
           if (screenAngle === 90) {
             roll = pitch;
-            pitch = -(e.gamma ?? 0);
+            pitch = -e.gamma;
           } else if (screenAngle === -90 || screenAngle === 270) {
             roll = -pitch;
-            pitch = e.gamma ?? 0;
+            pitch = e.gamma;
           } else if (screenAngle === 180) {
             roll = -roll;
             pitch = -pitch;
           }
 
-          // Stable low-pass smoothing (no wild drift, stable when still, snappy when moving)
+          const now = performance.now();
           const dt = Math.min((now - this.lastFilterMs) / 1000, 0.05);
           this.lastFilterMs = now;
-          const lerpRate = 1 - Math.pow(0.12, dt * 60);
+          const lerpRate = 1 - Math.pow(0.20, dt * 60);
 
-          this.calculatedTiltX += (roll - this.calculatedTiltX) * lerpRate;
-          this.calculatedTiltY += (pitch - this.calculatedTiltY) * lerpRate;
+          this.smoothGamma += (roll - this.smoothGamma) * lerpRate;
+          this.smoothBeta += (pitch - this.smoothBeta) * lerpRate;
 
-          this.normalizedTiltX = Math.max(-1, Math.min(1, this.calculatedTiltX / 45));
-          this.normalizedTiltY = Math.max(-1, Math.min(1, (this.calculatedTiltY - 70) / 45));
+          this.calculatedTiltX = this.smoothGamma;
+          this.calculatedTiltY = this.smoothBeta;
 
-          // Fallback calculation for upsideDownAngle if motion event gravity is unavailable
-          if (this.gravityY === null) {
-            let orientAngle = 0;
-            if (pitch > 90) {
-              orientAngle = pitch;
-            } else if (pitch < -90) {
-              orientAngle = 180 + (180 + pitch);
-            } else {
-              orientAngle = Math.max(0, 90 - pitch);
-            }
-            this.upsideDownAngle += (orientAngle - this.upsideDownAngle) * lerpRate;
-
-            if (!this.isDrinking) {
-              if (this.upsideDownAngle >= this.DRINK_START_THRESHOLD) {
-                this.isDrinking = true;
-              }
-            } else {
-              if (this.upsideDownAngle < this.DRINK_STOP_THRESHOLD) {
-                this.isDrinking = false;
-              }
-            }
-          }
+          this.updateDrinkingState();
         }
 
         private handleMotion(e: DeviceMotionEvent) {
@@ -844,84 +716,85 @@ import '../styles/global.css';
           if (!acc || typeof acc.x !== 'number' || typeof acc.y !== 'number') return;
           if (acc.x === 0 && acc.y === 0 && (acc.z === 0 || acc.z === null)) return;
 
-          this.gravityX = Math.round(acc.x * 100) / 100;
-          this.gravityY = Math.round(acc.y * 100) / 100;
-          this.gravityZ = typeof acc.z === 'number' ? Math.round(acc.z * 100) / 100 : null;
+          this.gravityX = acc.x;
+          this.gravityY = acc.y;
+          this.gravityZ = acc.z ?? 0;
 
           const now = performance.now();
-          this.lastEventMs = now;
-          this.formatTimestamp();
+          const dt = Math.min((now - this.lastFilterMs) / 1000, 0.05);
+          this.lastFilterMs = now;
+          const lerpRate = 1 - Math.pow(0.20, dt * 60);
 
-          // =========================================================
-          // TRUE 3D ORIENTATION ANGLE (INVARIANT TO ROTATION & SHAKE)
-          // Projection of gravity reaction force along phone's longitudinal (Y) axis:
-          // • Phone upright: +Y points up towards ceiling, acc.y ≈ +9.8 m/s² => angle = 0°
-          // • Tilted left or right 30°: acc.y ≈ 8.5 m/s² => angle ≈ 30° (NO consumption!)
-          // • Tilted 45°: acc.y ≈ 6.9 m/s² => angle ≈ 45° (NO consumption!)
-          // • Tilted horizontal (90°): acc.y ≈ 0 m/s² => angle ≈ 90° (NO consumption!)
-          // • Upside-down drinking position: +Y points to earth, acc.y is negative => angle ≥ 140° (CONSUMPTION STARTS!)
-          // =========================================================
-          const norm = Math.hypot(acc.x, acc.y, acc.z ?? 0);
-          if (norm > 2.0) {
-            const cosAngle = Math.max(-1, Math.min(1, acc.y / norm));
-            const rawAngleDeg = Math.acos(cosAngle) * (180 / Math.PI);
-
-            // Low-pass exponential smoothing (filters high-frequency shakes and hand movement)
-            const dt = Math.min((now - this.lastFilterMs) / 1000, 0.05);
-            const filterRate = 1 - Math.pow(0.08, dt * 60);
-            this.upsideDownAngle += (rawAngleDeg - this.upsideDownAngle) * filterRate;
-
-            // Strict Hysteresis:
-            // DRINK_START_THRESHOLD = 140° (must be clearly inverted/drinking orientation)
-            // DRINK_STOP_THRESHOLD = 125° (immediate cutoff when lowered)
-            if (!this.isDrinking) {
-              if (this.upsideDownAngle >= this.DRINK_START_THRESHOLD) {
-                this.isDrinking = true;
-              }
-            } else {
-              if (this.upsideDownAngle < this.DRINK_STOP_THRESHOLD) {
-                this.isDrinking = false;
-              }
-            }
-          }
+          this.smoothAccY += (acc.y - this.smoothAccY) * lerpRate;
 
           // Fallback if orientation event is not sending data
           if (this.source !== 'orientation' && this.source !== 'orientationabsolute') {
             this.status = 'active';
             this.source = 'motion';
-            this.eventCount++;
 
-            // Physical roll from gravity:
-            // When tilted left 30°: gravity pulls towards left edge (acc.x is positive)
-            // W3C gamma when tilted left is NEGATIVE (-30°)
-            const rollRad = Math.atan2(-acc.x, Math.max(0.5, Math.abs(acc.y)));
+            const rollRad = Math.atan2(-acc.x, Math.max(1.0, Math.abs(acc.y)));
             const pitchRad = Math.atan2(Math.abs(acc.z ?? 0), acc.y);
 
             const derivedGamma = (rollRad * 180) / Math.PI;
             const derivedBeta = (pitchRad * 180) / Math.PI;
 
-            this.rawGamma = Math.round(derivedGamma * 10) / 10;
-            this.rawBeta = Math.round(derivedBeta * 10) / 10;
+            this.smoothGamma += (derivedGamma - this.smoothGamma) * lerpRate;
+            this.smoothBeta += (derivedBeta - this.smoothBeta) * lerpRate;
 
-            const dt = Math.min((now - this.lastFilterMs) / 1000, 0.05);
-            this.lastFilterMs = now;
-            const lerpRate = 1 - Math.pow(0.12, dt * 60);
+            this.calculatedTiltX = this.smoothGamma;
+            this.calculatedTiltY = this.smoothBeta;
 
-            this.calculatedTiltX += (derivedGamma - this.calculatedTiltX) * lerpRate;
-            this.calculatedTiltY += (derivedBeta - this.calculatedTiltY) * lerpRate;
-
-            this.normalizedTiltX = Math.max(-1, Math.min(1, this.calculatedTiltX / 45));
-            this.normalizedTiltY = Math.max(-1, Math.min(1, (this.calculatedTiltY - 70) / 45));
+            this.updateDrinkingState();
           }
         }
 
-        private formatTimestamp() {
-          const d = new Date();
-          const hh = String(d.getHours()).padStart(2, '0');
-          const mm = String(d.getMinutes()).padStart(2, '0');
-          const ss = String(d.getSeconds()).padStart(2, '0');
-          const ms = String(d.getMilliseconds()).padStart(3, '0');
-          this.lastUpdateTimestamp = `${hh}:${mm}:${ss}.${ms}`;
+        private updateDrinkingState() {
+          if (!this.isDrinking) {
+            if (this.isTiltedToDrink()) {
+              this.isDrinking = true;
+            }
+          } else {
+            if (this.isPhoneLowered()) {
+              this.isDrinking = false;
+            }
+          }
+        }
+
+        /**
+         * Physical drinking check:
+         * Only activates when phone is physically tilted backward towards mouth / upside-down
+         * (i.e. bottom of phone raised towards ceiling, top of phone tilted down into mouth).
+         * Normal upright position (~70-85°), left/right tilt, flat, or forward tilt will NEVER activate drinking.
+         */
+        public isTiltedToDrink(): boolean {
+          if (this.source === 'orientation' || this.source === 'orientationabsolute') {
+            return this.smoothBeta >= 100;
+          }
+          if (this.source === 'motion') {
+            if (this.baseAccY >= 0) {
+              return this.smoothAccY < 2.5;
+            } else {
+              return this.smoothAccY > -2.5;
+            }
+          }
+          return false;
+        }
+
+        /**
+         * Checks if phone has been lowered back to normal upright/viewing position
+         */
+        public isPhoneLowered(): boolean {
+          if (this.source === 'orientation' || this.source === 'orientationabsolute') {
+            return this.smoothBeta <= 82;
+          }
+          if (this.source === 'motion') {
+            if (this.baseAccY >= 0) {
+              return this.smoothAccY > 6.0;
+            } else {
+              return this.smoothAccY < -6.0;
+            }
+          }
+          return true;
         }
       }
 
@@ -1429,140 +1302,7 @@ import '../styles/global.css';
         });
       }
 
-      // Update real-time Sensor Debug Panel
-      function updateDebugPanel() {
-        const dbgStatus = document.getElementById('dbg-status');
-        const dbgSource = document.getElementById('dbg-source');
-        const dbgAlpha = document.getElementById('dbg-alpha');
-        const dbgBeta = document.getElementById('dbg-beta');
-        const dbgGamma = document.getElementById('dbg-gamma');
-        const dbgTiltX = document.getElementById('dbg-tilt-x');
-        const dbgTiltY = document.getElementById('dbg-tilt-y');
-        const dbgGravX = document.getElementById('dbg-grav-x');
-        const dbgGravY = document.getElementById('dbg-grav-y');
-        const dbgMeterBar = document.getElementById('dbg-meter-bar');
-        const dbgTimestamp = document.getElementById('dbg-timestamp');
-        const dbgPulseDot = document.getElementById('dbg-pulse-dot');
-        const dbgPermBtn = document.getElementById('dbg-perm-btn');
-        const dbgInsecureAlert = document.getElementById('dbg-insecure-alert');
 
-        if (!dbgStatus) return;
-
-        // 1. Status badge color & text
-        if (sensorManager.status === 'active') {
-          dbgStatus.textContent = 'ACTIVE ⚡';
-          dbgStatus.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
-          if (dbgPulseDot) dbgPulseDot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-ping';
-          if (dbgPermBtn) dbgPermBtn.classList.add('hidden');
-        } else if (sensorManager.status === 'permission-required') {
-          dbgStatus.textContent = 'PERMISSION REQUIRED';
-          dbgStatus.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 animate-pulse';
-          if (dbgPulseDot) dbgPulseDot.className = 'w-2 h-2 rounded-full bg-amber-400';
-          if (dbgPermBtn) dbgPermBtn.classList.remove('hidden');
-        } else if (sensorManager.status === 'denied') {
-          dbgStatus.textContent = 'DENIED ❌';
-          dbgStatus.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40';
-          if (dbgPulseDot) dbgPulseDot.className = 'w-2 h-2 rounded-full bg-rose-500';
-        } else {
-          dbgStatus.textContent = 'UNSUPPORTED';
-          dbgStatus.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-zinc-700 text-zinc-400 border border-zinc-600';
-          if (dbgPulseDot) dbgPulseDot.className = 'w-2 h-2 rounded-full bg-zinc-600';
-        }
-
-        // Insecure context warning (Chrome on Android blocks sensors on plain http://LAN-IP)
-        if (dbgInsecureAlert) {
-          if (sensorManager.isInsecureOrigin && sensorManager.status !== 'active') {
-            dbgInsecureAlert.classList.remove('hidden');
-          } else {
-            dbgInsecureAlert.classList.add('hidden');
-          }
-        }
-
-        // 2. Raw sensor values
-        if (dbgSource) dbgSource.textContent = sensorManager.source;
-        if (dbgAlpha) dbgAlpha.textContent = sensorManager.rawAlpha !== null ? `${sensorManager.rawAlpha}°` : '--';
-        if (dbgBeta) dbgBeta.textContent = sensorManager.rawBeta !== null ? `${sensorManager.rawBeta}°` : '--';
-        if (dbgGamma) dbgGamma.textContent = sensorManager.rawGamma !== null ? `${sensorManager.rawGamma}°` : '--';
-
-        // 3. Calculated Tilt Angles
-        if (dbgTiltX) dbgTiltX.textContent = `${(sensorManager.calculatedTiltX >= 0 ? '+' : '')}${sensorManager.calculatedTiltX.toFixed(1)}°`;
-        if (dbgTiltY) dbgTiltY.textContent = `${(sensorManager.calculatedTiltY >= 0 ? '+' : '')}${sensorManager.calculatedTiltY.toFixed(1)}°`;
-
-        // 4. Gravity Vector
-        if (dbgGravX) dbgGravX.textContent = sensorManager.gravityX !== null ? `${sensorManager.gravityX}` : '--';
-        if (dbgGravY) dbgGravY.textContent = sensorManager.gravityY !== null ? `${sensorManager.gravityY}` : '--';
-
-        // 5. Visual Tilt Meter indicator:
-        // Left -30° => 5%, Center 0° => 50%, Right +30° => 95%
-        if (dbgMeterBar) {
-          const clampedTilt = Math.max(-30, Math.min(30, sensorManager.calculatedTiltX));
-          const pct = Math.max(5, Math.min(95, 50 + (clampedTilt / 30) * 45));
-          dbgMeterBar.style.left = `${pct}%`;
-        }
-
-        // 6. Upside-Down Drinking Angle & Hysteresis State
-        const dbgDrinkState = document.getElementById('dbg-drink-state');
-        const dbgDrinkAngle = document.getElementById('dbg-drink-angle');
-        const dbgDrinkMeter = document.getElementById('dbg-drink-meter');
-        const dbgJuiceLevel = document.getElementById('dbg-juice-level');
-
-        if (dbgDrinkState) {
-          if (sensorManager.isDrinking) {
-            dbgDrinkState.textContent = 'DRINKING 🥤';
-            dbgDrinkState.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/30 text-amber-300 border border-amber-500/60 animate-pulse';
-          } else {
-            dbgDrinkState.textContent = 'IDLE';
-            dbgDrinkState.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-zinc-800 text-zinc-400 border border-zinc-700';
-          }
-        }
-
-        if (dbgDrinkAngle) {
-          dbgDrinkAngle.textContent = `${sensorManager.upsideDownAngle.toFixed(1)}°`;
-        }
-
-        if (dbgDrinkMeter) {
-          const pct = Math.max(0, Math.min(100, (sensorManager.upsideDownAngle / 180) * 100));
-          dbgDrinkMeter.style.width = `${pct}%`;
-          dbgDrinkMeter.className = sensorManager.isDrinking
-            ? 'h-full bg-amber-400 rounded-full transition-all'
-            : 'h-full bg-lime-400 rounded-full transition-all';
-        }
-
-        if (dbgJuiceLevel && liquidRenderer) {
-          const juicePct = Math.round(liquidRenderer.targetJuiceLevel * 100);
-          dbgJuiceLevel.textContent = `${juicePct}%`;
-        }
-
-        // 7. Timestamp
-        if (dbgTimestamp) {
-          const msAgo = sensorManager.lastEventMs > 0 ? Math.round(performance.now() - sensorManager.lastEventMs) : null;
-          dbgTimestamp.textContent = msAgo !== null ? `${sensorManager.lastUpdateTimestamp} (${msAgo}ms ago)` : 'waiting...';
-        }
-      }
-
-      // Run real-time debug updater continuously every 50ms (20fps) even on menu
-      setInterval(updateDebugPanel, 50);
-
-      // Debug Panel controls
-      const dbgPermBtn = document.getElementById('dbg-perm-btn');
-      dbgPermBtn?.addEventListener('click', () => {
-        sensorManager.requestAccess();
-      });
-
-      const debugToggleBtn = document.getElementById('debug-toggle-btn');
-      const debugBody = document.getElementById('debug-body');
-      debugToggleBtn?.addEventListener('click', () => {
-        if (debugBody) {
-          const isHidden = debugBody.classList.contains('hidden');
-          if (isHidden) {
-            debugBody.classList.remove('hidden');
-            debugToggleBtn.textContent = 'Hide';
-          } else {
-            debugBody.classList.add('hidden');
-            debugToggleBtn.textContent = 'Show';
-          }
-        }
-      });
 
       // Main 60fps Physics & Render Loop
       let lastTime = performance.now();
@@ -1614,7 +1354,7 @@ import '../styles/global.css';
           if (sipCountBadge) sipCountBadge.textContent = `${remainingPct}%`;
           if (sipCardTitle) sipCardTitle.textContent = 'Gatak Gatak... 🥤 Piyo!';
           if (sipCardDesc) {
-            sipCardDesc.textContent = `Upside-down drinking active (${Math.round(sensorManager.upsideDownAngle)}°) — Lower phone to stop!`;
+            sipCardDesc.textContent = 'Gatak gatak... peete raho! Lower phone to pause.';
           }
 
           if (liquidRenderer.targetJuiceLevel <= 0.005) {
@@ -1638,13 +1378,7 @@ import '../styles/global.css';
 
           if (sipCardTitle) sipCardTitle.textContent = 'Chuski Lo — Asli Sukoon';
           if (sipCardDesc) {
-            if (sensorManager.status === 'active') {
-              const tilt = Math.round(sensorManager.calculatedTiltX);
-              const angle = Math.round(sensorManager.upsideDownAngle);
-              sipCardDesc.textContent = `📐 Tilt: ${tilt >= 0 ? '+' : ''}${tilt}° | Inversion: ${angle}° — Drink ke liye phone ulta karo (≥140°)`;
-            } else {
-              sipCardDesc.textContent = 'Hold phone like a real glass & tilt upside-down to drink! (Or tap glass)';
-            }
+            sipCardDesc.textContent = 'Hold phone like a real glass & tilt upside-down to drink!';
           }
         }
 
@@ -1689,6 +1423,7 @@ import '../styles/global.css';
 
       function resetGlass() {
         isFinished = false;
+        sensorManager.calibrate();
         if (sipCountBadge) sipCountBadge.textContent = '100%';
         if (sipCardTitle) sipCardTitle.textContent = 'Chuski Lo — Asli Sukoon';
         if (sipCardDesc) sipCardDesc.textContent = 'Hold the phone like a real glass and tilt upside-down to drink!';
@@ -1720,6 +1455,7 @@ import '../styles/global.css';
       // Transition from Menu to Full-Screen Drinking View
       openGlassBtn?.addEventListener('click', () => {
         sensorManager.requestAccess();
+        sensorManager.calibrate();
         soundEngine.playClick();
 
         viewMenu?.classList.add('hidden');
@@ -1758,7 +1494,7 @@ import '../styles/global.css';
         sensorManager.requestAccess();
         if (viewDrinking?.classList.contains('hidden')) return;
         const target = e.target as HTMLElement;
-        if (target.closest('button') || target.closest('#sip-tap-card') || target.closest('#jukebox-pill') || target.closest('#sensor-debug-panel')) return;
+        if (target.closest('button') || target.closest('#sip-tap-card') || target.closest('#jukebox-pill')) return;
         dragStartX = e.clientX;
         dragStartY = e.clientY;
         totalDragDist = 0;

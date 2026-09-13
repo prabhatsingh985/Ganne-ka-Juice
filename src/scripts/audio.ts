@@ -5,9 +5,20 @@
 
 class SoundEngine {
   private ctx: AudioContext | null = null;
-  private isMuted: boolean = true;
+  private isMuted: boolean = false; // Default: sound ENABLED
   private lofiInterval: number | null = null;
   private isLofiPlaying: boolean = false;
+
+  constructor() {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('ganna_sound_muted');
+        if (saved !== null) {
+          this.isMuted = saved === 'true';
+        }
+      } catch {}
+    }
+  }
 
   private initContext() {
     if (!this.ctx && typeof window !== 'undefined') {
@@ -24,10 +35,15 @@ class SoundEngine {
   public toggleMute(): boolean {
     this.initContext();
     this.isMuted = !this.isMuted;
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('ganna_sound_muted', String(this.isMuted));
+      } catch {}
+    }
     if (this.isMuted) {
       this.stopLofi();
     } else {
-      this.startLofi();
+      this.playClick();
     }
     return this.isMuted;
   }
@@ -38,9 +54,8 @@ class SoundEngine {
 
   public startLofi() {
     this.initContext();
-    if (!this.ctx || this.isLofiPlaying) return;
+    if (!this.ctx || this.isLofiPlaying || this.isMuted) return;
     this.isLofiPlaying = true;
-    this.isMuted = false;
 
     // Generative Lo-Fi Ambient Chords (Fmaj7 -> Em7 -> Dm7 -> Cmaj7)
     const chords = [
