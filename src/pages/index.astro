@@ -140,6 +140,34 @@ import '../styles/global.css';
           </div>
         </div>
 
+        <!-- Upside-Down Drinking Angle & Hysteresis State -->
+        <div class="bg-black/60 p-2 rounded-lg border border-zinc-800 space-y-1">
+          <div class="flex justify-between items-center">
+            <span class="text-[9px] text-zinc-400">Drinking State:</span>
+            <span id="dbg-drink-state" class="px-2 py-0.5 rounded text-[10px] font-bold bg-zinc-800 text-zinc-400 border border-zinc-700">
+              IDLE
+            </span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-[9px] text-zinc-400">Upside-Down Angle:</span>
+            <span id="dbg-drink-angle" class="text-xs font-bold text-amber-300">0.0°</span>
+          </div>
+          <div class="text-[8px] text-zinc-500 flex justify-between">
+            <span>Start: ≥ 140° (Inverted)</span>
+            <span>Stop: &lt; 125°</span>
+          </div>
+          <!-- Inversion Progress Meter (0° to 180°) -->
+          <div class="relative w-full h-2 bg-zinc-800 rounded-full overflow-hidden">
+            <!-- 140° threshold indicator at (140/180) ≈ 77.7% -->
+            <div class="absolute top-0 bottom-0 left-[77.7%] w-0.5 bg-amber-400/80 z-10" title="Start Threshold 140°"></div>
+            <div id="dbg-drink-meter" class="h-full bg-lime-400 rounded-full transition-all" style="width: 0%;"></div>
+          </div>
+          <div class="flex justify-between items-center pt-0.5">
+            <span class="text-[9px] text-zinc-400">Juice Level:</span>
+            <span id="dbg-juice-level" class="text-xs font-bold text-lime-400">100%</span>
+          </div>
+        </div>
+
         <!-- Timestamp & Event Counter -->
         <div class="flex justify-between items-center text-[10px] text-zinc-500 px-1 pt-0.5">
           <span>Last Update:</span>
@@ -480,10 +508,7 @@ import '../styles/global.css';
       type Flavor = 'saada' | 'nimbu' | 'kesar';
       let selectedFlavor: Flavor = 'saada';
       let isKesarUnlocked = false;
-      let sipsTaken = 0;
-      const MAX_SIPS = 4;
       let isFinished = false;
-      let canSip = true;
 
       // Views & Elements
       const viewMenu = document.getElementById('view-menu');
@@ -632,12 +657,18 @@ import '../styles/global.css';
         // Calculated tilt angles in degrees
         // tiltX (Roll): negative when tilted left, positive when tilted right
         // tiltY (Pitch): upright is ~65-80°, drinking tilt is >= 84°
-        public calculatedTiltX: number = 0;
-        public calculatedTiltY: number = 70;
+        public calculatedTiltX: number = 0; // Physical Roll (-45° to +45°)
+        public calculatedTiltY: number = 70; // Physical Pitch (0° flat to 90° upright)
 
         // Normalized tilt (-1.0 to +1.0)
         public normalizedTiltX: number = 0;
         public normalizedTiltY: number = 0;
+
+        // Upside-Down Inversion Angle & Hysteresis Drinking State
+        public upsideDownAngle: number = 0; // 0° = upright vertical, 90° = flat/horizontal, 180° = upside down
+        public isDrinking: boolean = false;
+        public readonly DRINK_START_THRESHOLD = 140; // Starts drinking when upside-down tilt >= 140°
+        public readonly DRINK_STOP_THRESHOLD = 125;  // Stops drinking when returning below 125°
 
         public lastUpdateTimestamp: string = 'waiting...';
         public lastEventMs: number = 0;
@@ -783,6 +814,29 @@ import '../styles/global.css';
 
           this.normalizedTiltX = Math.max(-1, Math.min(1, this.calculatedTiltX / 45));
           this.normalizedTiltY = Math.max(-1, Math.min(1, (this.calculatedTiltY - 70) / 45));
+
+          // Fallback calculation for upsideDownAngle if motion event gravity is unavailable
+          if (this.gravityY === null) {
+            let orientAngle = 0;
+            if (pitch > 90) {
+              orientAngle = pitch;
+            } else if (pitch < -90) {
+              orientAngle = 180 + (180 + pitch);
+            } else {
+              orientAngle = Math.max(0, 90 - pitch);
+            }
+            this.upsideDownAngle += (orientAngle - this.upsideDownAngle) * lerpRate;
+
+            if (!this.isDrinking) {
+              if (this.upsideDownAngle >= this.DRINK_START_THRESHOLD) {
+                this.isDrinking = true;
+              }
+            } else {
+              if (this.upsideDownAngle < this.DRINK_STOP_THRESHOLD) {
+                this.isDrinking = false;
+              }
+            }
+          }
         }
 
         private handleMotion(e: DeviceMotionEvent) {
@@ -797,6 +851,39 @@ import '../styles/global.css';
           const now = performance.now();
           this.lastEventMs = now;
           this.formatTimestamp();
+
+          // =========================================================
+          // TRUE 3D ORIENTATION ANGLE (INVARIANT TO ROTATION & SHAKE)
+          // Projection of gravity reaction force along phone's longitudinal (Y) axis:
+          // • Phone upright: +Y points up towards ceiling, acc.y ≈ +9.8 m/s² => angle = 0°
+          // • Tilted left or right 30°: acc.y ≈ 8.5 m/s² => angle ≈ 30° (NO consumption!)
+          // • Tilted 45°: acc.y ≈ 6.9 m/s² => angle ≈ 45° (NO consumption!)
+          // • Tilted horizontal (90°): acc.y ≈ 0 m/s² => angle ≈ 90° (NO consumption!)
+          // • Upside-down drinking position: +Y points to earth, acc.y is negative => angle ≥ 140° (CONSUMPTION STARTS!)
+          // =========================================================
+          const norm = Math.hypot(acc.x, acc.y, acc.z ?? 0);
+          if (norm > 2.0) {
+            const cosAngle = Math.max(-1, Math.min(1, acc.y / norm));
+            const rawAngleDeg = Math.acos(cosAngle) * (180 / Math.PI);
+
+            // Low-pass exponential smoothing (filters high-frequency shakes and hand movement)
+            const dt = Math.min((now - this.lastFilterMs) / 1000, 0.05);
+            const filterRate = 1 - Math.pow(0.08, dt * 60);
+            this.upsideDownAngle += (rawAngleDeg - this.upsideDownAngle) * filterRate;
+
+            // Strict Hysteresis:
+            // DRINK_START_THRESHOLD = 140° (must be clearly inverted/drinking orientation)
+            // DRINK_STOP_THRESHOLD = 125° (immediate cutoff when lowered)
+            if (!this.isDrinking) {
+              if (this.upsideDownAngle >= this.DRINK_START_THRESHOLD) {
+                this.isDrinking = true;
+              }
+            } else {
+              if (this.upsideDownAngle < this.DRINK_STOP_THRESHOLD) {
+                this.isDrinking = false;
+              }
+            }
+          }
 
           // Fallback if orientation event is not sending data
           if (this.source !== 'orientation' && this.source !== 'orientationabsolute') {
@@ -835,20 +922,6 @@ import '../styles/global.css';
           const ss = String(d.getSeconds()).padStart(2, '0');
           const ms = String(d.getMilliseconds()).padStart(3, '0');
           this.lastUpdateTimestamp = `${hh}:${mm}:${ss}.${ms}`;
-        }
-
-        public isTiltedToDrink(): boolean {
-          if (this.status !== 'active') return false;
-          // Drink when pitch is tilted back (>= 84°) OR vertical gravity inverted (acc.y < 4.0)
-          if (this.calculatedTiltY >= 84) return true;
-          if (this.gravityY !== null && this.gravityY < 4.0) return true;
-          return false;
-        }
-
-        public isPhoneLowered(): boolean {
-          const isAngleLowered = this.calculatedTiltY <= 76;
-          const isGravityLowered = this.gravityY === null || this.gravityY >= 5.5;
-          return isAngleLowered && isGravityLowered;
         }
       }
 
@@ -1427,7 +1500,40 @@ import '../styles/global.css';
           dbgMeterBar.style.left = `${pct}%`;
         }
 
-        // 6. Timestamp
+        // 6. Upside-Down Drinking Angle & Hysteresis State
+        const dbgDrinkState = document.getElementById('dbg-drink-state');
+        const dbgDrinkAngle = document.getElementById('dbg-drink-angle');
+        const dbgDrinkMeter = document.getElementById('dbg-drink-meter');
+        const dbgJuiceLevel = document.getElementById('dbg-juice-level');
+
+        if (dbgDrinkState) {
+          if (sensorManager.isDrinking) {
+            dbgDrinkState.textContent = 'DRINKING 🥤';
+            dbgDrinkState.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/30 text-amber-300 border border-amber-500/60 animate-pulse';
+          } else {
+            dbgDrinkState.textContent = 'IDLE';
+            dbgDrinkState.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-zinc-800 text-zinc-400 border border-zinc-700';
+          }
+        }
+
+        if (dbgDrinkAngle) {
+          dbgDrinkAngle.textContent = `${sensorManager.upsideDownAngle.toFixed(1)}°`;
+        }
+
+        if (dbgDrinkMeter) {
+          const pct = Math.max(0, Math.min(100, (sensorManager.upsideDownAngle / 180) * 100));
+          dbgDrinkMeter.style.width = `${pct}%`;
+          dbgDrinkMeter.className = sensorManager.isDrinking
+            ? 'h-full bg-amber-400 rounded-full transition-all'
+            : 'h-full bg-lime-400 rounded-full transition-all';
+        }
+
+        if (dbgJuiceLevel && liquidRenderer) {
+          const juicePct = Math.round(liquidRenderer.targetJuiceLevel * 100);
+          dbgJuiceLevel.textContent = `${juicePct}%`;
+        }
+
+        // 7. Timestamp
         if (dbgTimestamp) {
           const msAgo = sensorManager.lastEventMs > 0 ? Math.round(performance.now() - sensorManager.lastEventMs) : null;
           dbgTimestamp.textContent = msAgo !== null ? `${sensorManager.lastUpdateTimestamp} (${msAgo}ms ago)` : 'waiting...';
@@ -1461,12 +1567,17 @@ import '../styles/global.css';
       // Main 60fps Physics & Render Loop
       let lastTime = performance.now();
       let animFrameId: number | null = null;
+      let lastGulpTime = 0;
 
       function renderLoop(now: number) {
         const dt = Math.min((now - lastTime) / 1000, 0.05);
         lastTime = now;
 
-        // Feed REAL physical hardware tilt into liquid physics
+        // =========================================================
+        // 1. GYROSCOPE ORIENTATION CONTROLS FLUID SLOSHING & WAVES
+        // Normal movement, slight tilt (10°, 20°, 30°, 45°), rotating, shaking
+        // continuously drives realistic fluid surface physics WITHOUT consuming juice.
+        // =========================================================
         const rollRad = (sensorManager.calculatedTiltX * Math.PI) / 180;
 
         if (liquidRenderer) {
@@ -1474,84 +1585,102 @@ import '../styles/global.css';
           liquidRenderer.draw();
         }
 
-        // Physical drinking gesture detection
-        if (sensorManager.isTiltedToDrink() && canSip && sipsTaken < MAX_SIPS && !isFinished) {
-          canSip = false;
-          takeSip();
-        }
+        // =========================================================
+        // 2. STRICT UPSIDE-DOWN ORIENTATION THRESHOLD CONTROLS DRINKING
+        // • Normal movement, tilt < 140° => NO consumption (juice amount unchanged)
+        // • Upside-down tilt >= 140° => START continuous consumption
+        // • Tilted back below 125° => STOP consumption immediately!
+        // =========================================================
+        if (sensorManager.isDrinking && liquidRenderer && !isFinished && liquidRenderer.targetJuiceLevel > 0) {
+          // Smooth continuous decrease while in upside-down position
+          // DRAIN_RATE = 0.18 (takes ~5.5s of continuous upside-down holding to empty full glass)
+          const DRAIN_RATE = 0.18;
+          liquidRenderer.targetJuiceLevel = Math.max(0, liquidRenderer.targetJuiceLevel - DRAIN_RATE * dt);
 
-        // Re-arm drinking trigger once phone is lowered
-        if (!canSip && sensorManager.isPhoneLowered()) {
-          canSip = true;
-        }
+          // Periodic gulp sound every 950ms while continuously drinking
+          if (now - lastGulpTime >= 950) {
+            lastGulpTime = now;
+            soundEngine.playGulp();
+            if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+              try { navigator.vibrate(45); } catch {}
+            }
+          }
 
-        // Live HUD Sensor Feedback: Show current tilt & pitch angles directly on card
-        if (sipCardDesc && !isFinished) {
-          if (sensorManager.status === 'active') {
-            const tilt = Math.round(sensorManager.calculatedTiltX);
-            const pitch = Math.round(sensorManager.calculatedTiltY);
-            sipCardDesc.textContent = `📐 Tilt: ${tilt}° | Pitch: ${pitch}° — Muh ke paas tilt karo sip ke liye!`;
-          } else {
-            sipCardDesc.textContent = `Hold phone like a real glass & tilt to mouth! (Or tap glass to sip)`;
+          // Spout overflow visual at top rim while pouring into mouth
+          pourStreamLeft?.classList.remove('opacity-0');
+
+          // Live percentage display
+          const remainingPct = Math.round(liquidRenderer.targetJuiceLevel * 100);
+          if (sipCountBadge) sipCountBadge.textContent = `${remainingPct}%`;
+          if (sipCardTitle) sipCardTitle.textContent = 'Gatak Gatak... 🥤 Piyo!';
+          if (sipCardDesc) {
+            sipCardDesc.textContent = `Upside-down drinking active (${Math.round(sensorManager.upsideDownAngle)}°) — Lower phone to stop!`;
+          }
+
+          if (liquidRenderer.targetJuiceLevel <= 0.005) {
+            liquidRenderer.targetJuiceLevel = 0;
+            liquidRenderer.juiceLevel = 0;
+            isFinished = true;
+            soundEngine.playCheers();
+            if (sipCardTitle) sipCardTitle.textContent = 'GLASS KHATAM! 🎉';
+            if (sipCardDesc) sipCardDesc.textContent = 'Sukoon: 100% Guaranteed ☀️ Taaza Ganna Baar!';
+            if (sipCountBadge) sipCountBadge.textContent = '0%';
+            sipTapCard?.classList.add('hidden');
+            finishReplayBtn?.classList.remove('hidden');
+            finishReplayBtn?.classList.add('flex');
+            pourStreamLeft?.classList.add('opacity-0');
+            showToast('🎉 Glass Khatam! Asli desi sukoon mil gaya!');
+          }
+        } else if (!isFinished && liquidRenderer) {
+          // Normal movement / below threshold: Consumption is STOPPED immediately!
+          pourStreamLeft?.classList.add('opacity-0');
+          pourStreamRight?.classList.add('opacity-0');
+
+          if (sipCardTitle) sipCardTitle.textContent = 'Chuski Lo — Asli Sukoon';
+          if (sipCardDesc) {
+            if (sensorManager.status === 'active') {
+              const tilt = Math.round(sensorManager.calculatedTiltX);
+              const angle = Math.round(sensorManager.upsideDownAngle);
+              sipCardDesc.textContent = `📐 Tilt: ${tilt >= 0 ? '+' : ''}${tilt}° | Inversion: ${angle}° — Drink ke liye phone ulta karo (≥140°)`;
+            } else {
+              sipCardDesc.textContent = 'Hold phone like a real glass & tilt upside-down to drink! (Or tap glass)';
+            }
           }
         }
 
-        // Overflow spout pouring visual if tilted extreme left or right
+        // Visual overflow splash on extreme left or right edge tilt
         if (liquidRenderer && liquidRenderer.juiceLevel > 0.05 && !isFinished) {
           const leftNode = liquidRenderer.nodes[0];
           const rightNode = liquidRenderer.nodes[liquidRenderer.nodeCount - 1];
           if (leftNode && leftNode.y <= liquidRenderer.topRimY + 8) {
             pourStreamLeft?.classList.remove('opacity-0');
-          } else {
-            pourStreamLeft?.classList.add('opacity-0');
           }
           if (rightNode && rightNode.y <= liquidRenderer.topRimY + 8) {
             pourStreamRight?.classList.remove('opacity-0');
-          } else {
-            pourStreamRight?.classList.add('opacity-0');
           }
-        } else {
-          pourStreamLeft?.classList.add('opacity-0');
-          pourStreamRight?.classList.add('opacity-0');
         }
 
         animFrameId = requestAnimationFrame(renderLoop);
       }
 
-      function takeSip() {
-        if (sipsTaken >= MAX_SIPS || isFinished) return;
-        sipsTaken++;
+      // Manual tap sip (for tap users or fallback)
+      function takeManualSip() {
+        if (isFinished || !liquidRenderer) return;
         soundEngine.playGulp();
+        liquidRenderer.targetJuiceLevel = Math.max(0, liquidRenderer.targetJuiceLevel - 0.25);
+        liquidRenderer.splash(0.5, 12.0);
+        const remainingPct = Math.round(liquidRenderer.targetJuiceLevel * 100);
+        if (sipCountBadge) sipCountBadge.textContent = `${remainingPct}%`;
+        showToast(`🥤 Tap Sip! Bacha: ${remainingPct}%`);
 
-        if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
-          try {
-            navigator.vibrate([60, 30, 60]);
-          } catch {}
-        }
-
-        if (sipCountBadge) {
-          sipCountBadge.textContent = `${sipsTaken}/${MAX_SIPS}`;
-        }
-
-        showToast(`🥤 Chuski ${sipsTaken}/${MAX_SIPS} Li! Maza Aa Gaya`);
-
-        // Liquid drains by 25% with dynamic slosh splash
-        if (liquidRenderer) {
-          liquidRenderer.targetJuiceLevel = Math.max(0, 1 - sipsTaken / MAX_SIPS);
-          liquidRenderer.splash(0.5, 12.0); // Big wave splash on sip
-        }
-
-        // Automatic re-arm cooldown so sip is never blocked
-        setTimeout(() => {
-          canSip = true;
-        }, 1300);
-
-        if (sipsTaken >= MAX_SIPS) {
+        if (liquidRenderer.targetJuiceLevel <= 0.005) {
+          liquidRenderer.targetJuiceLevel = 0;
+          liquidRenderer.juiceLevel = 0;
           isFinished = true;
           soundEngine.playCheers();
           if (sipCardTitle) sipCardTitle.textContent = 'GLASS KHATAM! 🎉';
-          if (sipCardDesc) sipCardDesc.textContent = 'Sukoon: 100% Guaranteed ☀️';
-          if (sipCountBadge) sipCountBadge.textContent = '4/4';
+          if (sipCardDesc) sipCardDesc.textContent = 'Sukoon: 100% Guaranteed ☀️ Taaza Ganna Baar!';
+          if (sipCountBadge) sipCountBadge.textContent = '0%';
           sipTapCard?.classList.add('hidden');
           finishReplayBtn?.classList.remove('hidden');
           finishReplayBtn?.classList.add('flex');
@@ -1559,12 +1688,10 @@ import '../styles/global.css';
       }
 
       function resetGlass() {
-        sipsTaken = 0;
         isFinished = false;
-        canSip = true;
-        if (sipCountBadge) sipCountBadge.textContent = `0/${MAX_SIPS}`;
+        if (sipCountBadge) sipCountBadge.textContent = '100%';
         if (sipCardTitle) sipCardTitle.textContent = 'Chuski Lo — Asli Sukoon';
-        if (sipCardDesc) sipCardDesc.textContent = 'Hold the phone like a real glass and tilt it towards your mouth to sip!';
+        if (sipCardDesc) sipCardDesc.textContent = 'Hold the phone like a real glass and tilt upside-down to drink!';
         sipTapCard?.classList.remove('hidden');
         finishReplayBtn?.classList.add('hidden');
         finishReplayBtn?.classList.remove('flex');
@@ -1577,9 +1704,7 @@ import '../styles/global.css';
 
       // Tap on bottom card to sip
       sipTapCard?.addEventListener('click', () => {
-        if (sipsTaken < MAX_SIPS) {
-          takeSip();
-        }
+        takeManualSip();
       });
 
       resetBtn?.addEventListener('click', () => {
@@ -1647,8 +1772,8 @@ import '../styles/global.css';
 
       window.addEventListener('pointerup', () => {
         if (viewDrinking?.classList.contains('hidden')) return;
-        if (totalDragDist < 8 && sipsTaken < MAX_SIPS && !isFinished) {
-          takeSip();
+        if (totalDragDist < 8 && !isFinished) {
+          takeManualSip();
         }
       });
 
