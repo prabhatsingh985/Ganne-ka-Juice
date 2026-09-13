@@ -3,6 +3,7 @@
 // Full viewport drinking glass with real-time 2D fluid wave & sloshing physics,
 // true multi-point wave surface tension, inertia, and mouth-tilt sensor detection.
 import '../styles/global.css';
+import Analytics from '@vercel/analytics/astro';
 ---
 
 <!doctype html>
@@ -42,6 +43,9 @@ import '../styles/global.css';
     />
   </head>
   <body class="min-h-screen bg-[#070e04] text-zinc-100 flex flex-col justify-between items-center relative select-none overflow-x-hidden">
+    <!-- Vercel Web Analytics -->
+    <Analytics />
+
     <!-- Ambient Sugarcane Aura -->
     <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[380px] sm:w-[500px] h-[380px] sm:h-[500px] bg-gradient-to-tr from-lime-600/20 via-yellow-400/15 to-transparent rounded-full blur-3xl pointer-events-none -z-10"></div>
 
