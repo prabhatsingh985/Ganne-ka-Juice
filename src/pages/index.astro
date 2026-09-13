@@ -128,55 +128,60 @@ import '../styles/global.css';
       <h2 class="font-display font-black text-xl sm:text-2xl text-white tracking-widest mt-1">
         GANNA BAAR
       </h2>
-      <p class="font-body text-xs sm:text-sm text-zinc-400 mt-1 font-light tracking-wide">
+      <p class="font-body text-xs sm:text-sm text-zinc-400 mt-1 mb-5 sm:mb-6 font-light tracking-wide">
         The Online Sugarcane Break ☀️
       </p>
 
       <!-- Preview Static Cutting Glass Graphic -->
-      <div id="preview-glass-container" class="relative w-40 sm:w-48 aspect-[3/4] my-4 flex items-center justify-center transition-transform duration-300 ease-out origin-bottom">
-        <div class="absolute -top-2 text-lg animate-float-slow opacity-80">🍋</div>
-        <div class="absolute -bottom-1 -left-2 text-base animate-float-slow opacity-80" style="animation-delay: 1.5s;">🧊</div>
+      <div class="w-full flex items-center justify-center my-2 sm:my-3">
+        <div
+          id="preview-glass-container"
+          class="relative w-36 sm:w-44 h-48 sm:h-56 flex items-center justify-center transition-transform duration-300 ease-out origin-center"
+        >
+          <div class="absolute top-1 right-1 sm:right-2 text-base sm:text-lg animate-float-slow opacity-90 z-10" title="Fresh Lemon Garnish">🍋</div>
+          <div class="absolute bottom-2 left-0 sm:left-1 text-sm sm:text-base animate-float-slow opacity-80" style="animation-delay: 1.5s;">🧊</div>
 
-        <svg viewBox="0 0 200 280" class="w-full h-full drop-shadow-2xl overflow-visible">
-          <defs>
-            <clipPath id="previewGlassClip">
-              <polygon points="40,25 160,25 146,252 54,252" />
-            </clipPath>
-            <linearGradient id="previewJuiceGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#E4F78F" />
-              <stop offset="35%" stop-color="#C5E038" />
-              <stop offset="70%" stop-color="#99B816" />
-              <stop offset="100%" stop-color="#556E0B" />
-            </linearGradient>
-            <linearGradient id="previewFoam" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#FCFFE7" stop-opacity="0.95" />
-              <stop offset="50%" stop-color="#F4FCC2" stop-opacity="0.98" />
-              <stop offset="100%" stop-color="#FCFFE7" stop-opacity="0.95" />
-            </linearGradient>
-          </defs>
-          <ellipse cx="100" cy="258" rx="50" ry="8" fill="rgba(0,0,0,0.6)" />
-          <polygon points="38,20 162,20 148,255 52,255" fill="rgba(255, 255, 255, 0.08)" stroke="rgba(255, 255, 255, 0.25)" stroke-width="2.5" />
-          <polygon points="52,242 148,242 146,254 54,254" fill="rgba(255, 255, 255, 0.25)" />
-          <g clip-path="url(#previewGlassClip)">
-            <rect id="preview-liquid" x="0" y="35" width="200" height="225" fill="url(#previewJuiceGrad)" />
-            <circle cx="70" cy="160" r="2.5" fill="#FCFFE7" opacity="0.6" class="animate-bounce" />
-            <circle cx="130" cy="180" r="3" fill="#FCFFE7" opacity="0.6" class="animate-bounce" />
-            <polygon points="65,45 80,38 94,46 78,53" fill="#FFFFFF" opacity="0.75" />
-            <polygon points="110,48 124,42 136,49 122,55" fill="#FFFFFF" opacity="0.75" />
-            <g id="preview-mint" class="hidden">
-              <circle cx="95" cy="45" r="7" fill="#48BB78" opacity="0.9" />
+          <svg viewBox="0 0 200 280" class="w-full h-full drop-shadow-2xl">
+            <defs>
+              <clipPath id="previewGlassClip">
+                <polygon points="40,25 160,25 146,252 54,252" />
+              </clipPath>
+              <linearGradient id="previewJuiceGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#E4F78F" />
+                <stop offset="35%" stop-color="#C5E038" />
+                <stop offset="70%" stop-color="#99B816" />
+                <stop offset="100%" stop-color="#556E0B" />
+              </linearGradient>
+              <linearGradient id="previewFoam" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#FCFFE7" stop-opacity="0.95" />
+                <stop offset="50%" stop-color="#F4FCC2" stop-opacity="0.98" />
+                <stop offset="100%" stop-color="#FCFFE7" stop-opacity="0.95" />
+              </linearGradient>
+            </defs>
+            <ellipse cx="100" cy="258" rx="50" ry="8" fill="rgba(0,0,0,0.6)" />
+            <polygon points="38,20 162,20 148,255 52,255" fill="rgba(255, 255, 255, 0.08)" stroke="rgba(255, 255, 255, 0.25)" stroke-width="2.5" />
+            <polygon points="52,242 148,242 146,254 54,254" fill="rgba(255, 255, 255, 0.25)" />
+            <g clip-path="url(#previewGlassClip)">
+              <rect id="preview-liquid" x="0" y="35" width="200" height="225" fill="url(#previewJuiceGrad)" />
+              <circle cx="70" cy="160" r="2.5" fill="#FCFFE7" opacity="0.6" class="animate-bounce" />
+              <circle cx="130" cy="180" r="3" fill="#FCFFE7" opacity="0.6" class="animate-bounce" />
+              <polygon points="65,45 80,38 94,46 78,53" fill="#FFFFFF" opacity="0.75" />
+              <polygon points="110,48 124,42 136,49 122,55" fill="#FFFFFF" opacity="0.75" />
+              <g id="preview-mint" class="hidden">
+                <circle cx="95" cy="45" r="7" fill="#48BB78" opacity="0.9" />
+              </g>
+              <ellipse cx="100" cy="35" rx="60" ry="10" fill="url(#previewFoam)" />
+              <g stroke="rgba(255, 255, 255, 0.2)" stroke-width="2.5" stroke-linecap="round">
+                <line x1="62" y1="35" x2="70" y2="235" />
+                <line x1="82" y1="35" x2="86" y2="235" />
+                <line x1="100" y1="35" x2="100" y2="235" />
+                <line x1="118" y1="35" x2="114" y2="235" />
+                <line x1="138" y1="35" x2="130" y2="235" />
+              </g>
             </g>
-            <ellipse cx="100" cy="35" rx="60" ry="10" fill="url(#previewFoam)" />
-            <g stroke="rgba(255, 255, 255, 0.2)" stroke-width="2.5" stroke-linecap="round">
-              <line x1="62" y1="35" x2="70" y2="235" />
-              <line x1="82" y1="35" x2="86" y2="235" />
-              <line x1="100" y1="35" x2="100" y2="235" />
-              <line x1="118" y1="35" x2="114" y2="235" />
-              <line x1="138" y1="35" x2="130" y2="235" />
-            </g>
-          </g>
-          <ellipse cx="100" cy="22" rx="62" ry="9" fill="none" stroke="rgba(255, 255, 255, 0.4)" stroke-width="2.5" />
-        </svg>
+            <ellipse cx="100" cy="22" rx="62" ry="9" fill="none" stroke="rgba(255, 255, 255, 0.4)" stroke-width="2.5" />
+          </svg>
+        </div>
       </div>
 
       <!-- Which glass would you like? Glass Size Selection -->
@@ -434,7 +439,7 @@ import '../styles/global.css';
           widthFactor: 0.62,       // Visibly smaller/narrower cutting tumbler
           topRimFraction: 0.25,    // Visibly shorter height (starts 25% from top)
           bottomPad: 46,
-          previewScale: 'scale(0.80)',
+          previewScale: 'scale(0.85)',
         },
         medium: {
           name: 'Medium',
@@ -454,7 +459,7 @@ import '../styles/global.css';
           widthFactor: 0.94,       // Wide, spacious, tall glass
           topRimFraction: 0.07,    // Tall glass (starts 7% from top)
           bottomPad: 68,
-          previewScale: 'scale(1.18)',
+          previewScale: 'scale(1.14)',
         },
       };
       let selectedGlassSize: GlassSize = 'medium';
