@@ -1,12 +1,12 @@
 ---
-// Ganna Baar (गन्ने का रस) - Ultra-Minimalist Desi Tapri Web Toy
+// Ganna Baar - Ultra-Minimalist Cane Juice Web Toy
 // Full viewport drinking glass with real-time 2D fluid wave & sloshing physics,
 // true multi-point wave surface tension, inertia, and mouth-tilt sensor detection.
 import '../styles/global.css';
 ---
 
 <!doctype html>
-<html lang="hi" class="dark">
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -14,23 +14,23 @@ import '../styles/global.css';
     <meta name="generator" content={Astro.generator} />
 
     <!-- SEO & Metadata -->
-    <title>गन्ने का रस — GANNA BAAR | The Online Ganna Break</title>
+    <title>GANNA BAAR — The Online Sugarcane Break</title>
     <meta
       name="description"
-      content="The Online Ganna Break ☀️ — Minimalist desi tapri web toy with real fluid physics. Tilt your phone to sip fresh sugarcane juice!"
+      content="The Online Sugarcane Break ☀️ — Interactive web toy with real fluid physics. Tilt your phone to sip fresh sugarcane juice!"
     />
     <meta name="theme-color" content="#070e04" />
 
     <!-- Open Graph Tags -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="गन्ने का रस — GANNA BAAR" />
+    <meta property="og:title" content="GANNA BAAR — The Online Sugarcane Break" />
     <meta
       property="og:description"
-      content="The Online Ganna Break ☀️ — Real fluid physics. Phone ko tilt karo aur fresh ganne ka ras piyo!"
+      content="The Online Sugarcane Break ☀️ — Real fluid physics toy. Tilt your phone to sip fresh sugarcane juice!"
     />
     <meta property="og:image" content="/og.png" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="गन्ने का रस — GANNA BAAR" />
+    <meta name="twitter:title" content="GANNA BAAR — The Online Sugarcane Break" />
     <meta name="twitter:image" content="/og.png" />
 
     <!-- Google Fonts: Baloo 2 + Poppins -->
@@ -45,6 +45,16 @@ import '../styles/global.css';
     <!-- Ambient Sugarcane Aura -->
     <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[380px] sm:w-[500px] h-[380px] sm:h-[500px] bg-gradient-to-tr from-lime-600/20 via-yellow-400/15 to-transparent rounded-full blur-3xl pointer-events-none -z-10"></div>
 
+    <!-- Hidden YouTube Audio Host (Zero Visible UI, 100% Legal Embed) -->
+    <div
+      id="yt-audio-container"
+      class="fixed -top-[9999px] -left-[9999px] w-1 h-1 opacity-0 pointer-events-none overflow-hidden"
+      aria-hidden="true"
+      tabindex="-1"
+    >
+      <div id="yt-player"></div>
+    </div>
+
     <!-- Quick Toast Notification -->
     <div
       id="app-toast"
@@ -54,13 +64,13 @@ import '../styles/global.css';
     </div>
 
     <!-- ========================================================= -->
-    <!-- VIEW 1: MINIMALIST MENU SELECTION SCREEN (CHAI BAAR STYLE)-->
+    <!-- VIEW 1: MINIMALIST MENU SELECTION SCREEN -->
     <!-- ========================================================= -->
     <main id="view-menu" class="w-full max-w-md flex flex-col items-center text-center my-auto px-4 py-6 transition-all duration-300 z-10">
       <!-- Top Navigation Header inside Menu -->
       <div class="w-full flex justify-between items-center mb-6">
         <div class="inline-block px-3.5 py-1 rounded-full border border-lime-500/30 text-lime-400 text-[10px] sm:text-[11px] font-display font-bold uppercase tracking-widest bg-lime-950/30">
-          DESI TAPRI EXPERIENCE
+          AUTHENTIC CANE EXPERIENCE
         </div>
 
         <div class="flex items-center gap-2">
@@ -75,29 +85,30 @@ import '../styles/global.css';
             <span id="menu-sound-icon">🔊</span>
           </button>
 
-          <!-- Lo-Fi Ambient Player -->
+          <!-- YouTube Music Player Switcher -->
           <button
             id="lofi-toggle-btn"
             type="button"
             class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/40 hover:bg-black/60 border border-white/10 text-white text-xs font-mono backdrop-blur-md transition-all active:scale-95 cursor-pointer shadow-lg"
-            aria-label="Toggle Ambient Audio"
+            title="Click to switch background music"
+            aria-label="Switch Background Music"
           >
-            <span class="text-zinc-500 text-[10px]">⏭️</span>
-            <span id="lofi-icon" class="text-lime-400 text-xs">▶️</span>
-            <span id="lofi-text" class="text-[11px] font-medium text-zinc-200">Ganna Tapri – Later</span>
+            <span class="text-zinc-400 text-[10px]">⏭️</span>
+            <span id="lofi-icon" class="text-lime-400 text-xs">🎵</span>
+            <span id="lofi-text" class="text-[11px] font-medium text-zinc-200">Sugarcane Groove</span>
           </button>
         </div>
       </div>
 
       <!-- Typography Header -->
       <h1 class="font-display font-black text-4xl sm:text-5xl text-transparent bg-clip-text bg-gradient-to-r from-lime-300 via-yellow-300 to-amber-400 leading-none mb-1">
-        गन्ने का रस
+        FRESH CANE JUICE
       </h1>
       <h2 class="font-display font-black text-xl sm:text-2xl text-white tracking-widest mt-1">
         GANNA BAAR
       </h2>
       <p class="font-body text-xs sm:text-sm text-zinc-400 mt-1 font-light tracking-wide">
-        The Online Ganna Break ☀️
+        The Online Sugarcane Break ☀️
       </p>
 
       <!-- Preview Static Cutting Glass Graphic -->
@@ -115,12 +126,6 @@ import '../styles/global.css';
               <stop offset="35%" stop-color="#C5E038" />
               <stop offset="70%" stop-color="#99B816" />
               <stop offset="100%" stop-color="#556E0B" />
-            </linearGradient>
-            <linearGradient id="previewKesarGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#FFE082" />
-              <stop offset="40%" stop-color="#FFB300" />
-              <stop offset="80%" stop-color="#E65100" />
-              <stop offset="100%" stop-color="#9C2706" />
             </linearGradient>
             <linearGradient id="previewFoam" x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" stop-color="#FCFFE7" stop-opacity="0.95" />
@@ -140,9 +145,6 @@ import '../styles/global.css';
             <g id="preview-mint" class="hidden">
               <circle cx="95" cy="45" r="7" fill="#48BB78" opacity="0.9" />
             </g>
-            <g id="preview-kesar" class="hidden">
-              <line x1="80" y1="40" x2="110" y2="46" stroke="#DC2626" stroke-width="2" />
-            </g>
             <ellipse cx="100" cy="35" rx="60" ry="10" fill="url(#previewFoam)" />
             <g stroke="rgba(255, 255, 255, 0.2)" stroke-width="2.5" stroke-linecap="round">
               <line x1="62" y1="35" x2="70" y2="235" />
@@ -156,14 +158,14 @@ import '../styles/global.css';
         </svg>
       </div>
 
-      <!-- Tapri Menu Label -->
+      <!-- Juice Menu Label -->
       <span class="text-[11px] font-display font-bold text-zinc-500 uppercase tracking-widest mb-2.5">
-        TAPRI MENU
+        JUICE MENU
       </span>
 
-      <!-- Horizontal Menu Cards -->
-      <div class="w-full grid grid-cols-3 gap-2 mb-5" id="tapri-menu-pills">
-        <!-- Card 1: Saada Ras -->
+      <!-- Horizontal Menu Cards (2 Flavors) -->
+      <div class="w-full grid grid-cols-2 gap-3 mb-5" id="tapri-menu-pills">
+        <!-- Card 1: Classic Cane -->
         <button
           type="button"
           data-flavor="saada"
@@ -171,14 +173,14 @@ import '../styles/global.css';
         >
           <span class="text-xl block mb-1">🌾</span>
           <span class="font-display font-bold text-xs sm:text-sm text-white block leading-tight">
-            Saada Ras
+            Classic Cane
           </span>
           <span class="text-[10px] font-body text-zinc-400 block leading-tight mt-0.5">
-            100% pure mithaas
+            100% pure & sweet
           </span>
         </button>
 
-        <!-- Card 2: Nimbu Masala -->
+        <!-- Card 2: Lemon & Mint -->
         <button
           type="button"
           data-flavor="nimbu"
@@ -186,25 +188,10 @@ import '../styles/global.css';
         >
           <span class="text-xl block mb-1">🍋</span>
           <span class="font-display font-bold text-xs sm:text-sm text-white block leading-tight">
-            Nimbu Masala
+            Lemon & Mint
           </span>
           <span class="text-[10px] font-body text-zinc-400 block leading-tight mt-0.5">
-            Mint & Kala Namak
-          </span>
-        </button>
-
-        <!-- Card 3: Shahi Kesar -->
-        <button
-          type="button"
-          data-flavor="kesar"
-          class="tapri-pill p-3 rounded-2xl border-2 border-zinc-800 bg-zinc-900/40 hover:bg-zinc-900/70 text-left transition-all cursor-pointer shadow-sm"
-        >
-          <span id="kesar-icon" class="text-xl block mb-1">🔒</span>
-          <span class="font-display font-bold text-xs sm:text-sm text-white block leading-tight">
-            Shahi Kesar
-          </span>
-          <span id="kesar-desc" class="text-[10px] font-body text-zinc-400 block leading-tight mt-0.5">
-            ₹10 Shagun special
+            Fresh mint & rock salt
           </span>
         </button>
       </div>
@@ -215,7 +202,7 @@ import '../styles/global.css';
         type="button"
         class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-lime-600 via-emerald-600 to-amber-500 hover:from-lime-500 hover:to-amber-400 text-white font-display font-bold text-lg shadow-lg hover:shadow-lime-500/25 transition-all transform active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
       >
-        <span>Ras Nikalo — Glass Bharo! 🥤</span>
+        <span>Pour Juice — Fill Glass! 🥤</span>
       </button>
 
       <!-- Bottom Privacy Tagline -->
@@ -227,16 +214,16 @@ import '../styles/global.css';
     </main>
 
     <!-- ========================================================= -->
-    <!-- VIEW 2: DEDICATED FULL-SCREEN CHAI BAAR SCALE DRINKING VIEW -->
+    <!-- VIEW 2: DEDICATED FULL-SCREEN DRINKING VIEW -->
     <!-- ========================================================= -->
     <div
       id="view-drinking"
       class="fixed inset-0 w-full h-full hidden overflow-hidden select-none touch-none z-40 bg-[#070e04]"
     >
       <!-- Background Canvas: Full screen edge-to-edge -->
-      <canvas id="liquid-physics-canvas" class="absolute inset-0 w-full h-full block"></canvas>
+      <canvas id="liquid-physics-canvas" class="absolute inset-0 w-full h-full block cursor-pointer"></canvas>
 
-      <!-- Top HUD Bar: Exact Chai Baar layout -->
+      <!-- Top HUD Bar -->
       <header class="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-4 pt-3.5 pb-2 pointer-events-auto">
         <button
           id="back-to-menu-btn"
@@ -244,21 +231,21 @@ import '../styles/global.css';
           class="px-3.5 py-1.5 rounded-full border border-lime-500/40 bg-[#0e1b09]/85 backdrop-blur-md text-lime-400 font-display font-bold text-xs tracking-wider cursor-pointer active:scale-95 transition-all shadow-md flex items-center gap-1.5"
         >
           <span>🌾</span>
-          <span>गन्ना बार</span>
+          <span>GANNA BAAR</span>
         </button>
 
         <div class="flex items-center gap-2">
           <!-- Sips Metric Pill -->
           <div class="px-3 py-1.5 rounded-full border border-lime-500/30 bg-[#0e1b09]/85 backdrop-blur-md text-lime-300 font-display font-bold text-xs flex items-center gap-1.5 shadow-md">
             <span>🥤</span>
-            <span id="sip-count-badge">0/4</span>
+            <span id="sip-count-badge">100%</span>
           </div>
           <!-- Sound Toggle -->
           <button
             id="audio-toggle-btn"
             type="button"
             class="w-8 h-8 rounded-full border border-zinc-700 bg-[#0e1b09]/85 backdrop-blur-md flex items-center justify-center text-sm cursor-pointer active:scale-95 transition-all"
-            title="Toggle Sound"
+            title="Mute / Unmute Sound"
           >
             <span id="sound-icon">🔊</span>
           </button>
@@ -267,24 +254,24 @@ import '../styles/global.css';
             id="reset-btn"
             type="button"
             class="w-8 h-8 rounded-full border border-zinc-700 bg-[#0e1b09]/85 backdrop-blur-md flex items-center justify-center text-sm text-zinc-300 font-bold cursor-pointer active:scale-95 transition-all"
-            title="Restart Glass"
+            title="Refill Glass"
           >
             ↺
           </button>
         </div>
       </header>
 
-      <!-- Jukebox Player Pill: Floating at upper right (exact Chai Baar position) -->
+      <!-- Jukebox Player Pill: Floating at upper right -->
       <div
         id="jukebox-pill"
         class="absolute top-14 right-4 z-20 flex items-center gap-2.5 px-3.5 py-1.5 rounded-full border border-lime-500/30 bg-[#0e1b09]/85 backdrop-blur-md shadow-xl cursor-pointer active:scale-95 transition-all pointer-events-auto"
-        title="Tap to toggle Lo-Fi music"
+        title="Click to switch background music"
       >
         <div class="text-[10px] text-right leading-tight">
           <span class="text-[8px] text-amber-400 font-bold tracking-widest block">NOW PLAYING</span>
-          <span id="jb-track-name" class="text-zinc-200 font-medium block">Ganna Tapri - Later</span>
+          <span id="jb-track-name" class="text-zinc-200 font-medium block">Sugarcane Groove</span>
         </div>
-        <button id="jb-play-btn" type="button" class="text-xs text-white">▶️</button>
+        <button id="jb-next-btn" type="button" class="text-xs text-lime-400" title="Next Song">⏭️</button>
         <span class="text-base animate-spin" style="animation-duration: 4s;">💿</span>
       </div>
 
@@ -296,22 +283,22 @@ import '../styles/global.css';
         <div class="text-3xl animate-bounce">💦</div>
       </div>
 
-      <!-- Bottom HUD: Exact Chai Baar Card Layout -->
+      <!-- Bottom HUD: Glass Action Card -->
       <div class="absolute bottom-5 left-4 right-4 max-w-sm mx-auto z-20 pointer-events-auto flex flex-col gap-2">
         <div
           id="sip-tap-card"
           class="p-3.5 sm:p-4 rounded-3xl bg-[#0e1b09]/90 border border-lime-500/30 flex items-center gap-3.5 backdrop-blur-md shadow-2xl transition-all active:scale-95 cursor-pointer"
-          title="Tap to take a sip or tilt phone to mouth"
+          title="Tap here or tap the glass to take a sip"
         >
           <div id="sip-flavor-icon" class="w-11 h-11 rounded-2xl bg-lime-950/60 border border-lime-500/40 flex items-center justify-center text-2xl shrink-0 shadow-inner">
             🥤
           </div>
           <div class="text-left flex-1">
             <div id="sip-card-title" class="font-display font-bold text-white text-base leading-tight">
-              Chuski Lo — Asli Sukoon
+              Take a Sip — Pure Refreshment
             </div>
             <div id="sip-card-desc" class="font-body text-xs text-zinc-400 mt-0.5 leading-snug">
-              Hold the phone like a real glass and tilt it towards your mouth to sip!
+              Hold phone like a real glass & tilt to drink, or tap the glass!
             </div>
           </div>
         </div>
@@ -322,54 +309,8 @@ import '../styles/global.css';
           type="button"
           class="hidden w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-lime-600 via-emerald-600 to-amber-500 hover:from-lime-500 hover:to-amber-400 text-white font-display font-black text-base shadow-xl transition-all transform active:scale-95 items-center justify-center gap-2 cursor-pointer"
         >
-          <span>Ek Aur Glass Ho Jaaye! 🔁</span>
+          <span>Pour Another Glass! 🔁</span>
         </button>
-      </div>
-    </div>
-
-    <!-- Shagun Honor Unlock Modal (Kesar Flavor) -->
-    <div
-      id="shagun-modal"
-      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden select-none"
-    >
-      <div class="bg-zinc-900 border-2 border-lime-500/50 rounded-3xl p-6 max-w-xs w-full text-center shadow-2xl">
-        <div class="text-4xl mb-2">👑</div>
-        <h3 class="font-display font-black text-xl text-white mb-1">
-          SHAHI KESAR GANNA
-        </h3>
-        <p class="text-xs text-zinc-400 mb-4 leading-relaxed">
-          Yeh kesar wala ganna khaas khet se aaya hai — kolhu bhaiya ko ₹10 ka shagun de do 💛
-        </p>
-
-        <div class="w-32 h-32 mx-auto bg-white p-2 rounded-2xl mb-3 flex items-center justify-center shadow-inner">
-          <svg viewBox="0 0 100 100" class="w-full h-full" fill="#18181b">
-            <rect x="5" y="5" width="28" height="28" rx="4" />
-            <rect x="11" y="11" width="16" height="16" fill="#ffffff" />
-            <rect x="15" y="15" width="8" height="8" />
-
-            <rect x="67" y="5" width="28" height="28" rx="4" />
-            <rect x="73" y="11" width="16" height="16" fill="#ffffff" />
-            <rect x="77" y="15" width="8" height="8" />
-
-            <rect x="5" y="67" width="28" height="28" rx="4" />
-            <rect x="11" y="73" width="16" height="16" fill="#ffffff" />
-            <rect x="15" y="77" width="8" height="8" />
-
-            <circle cx="50" cy="50" r="12" fill="#84cc16" />
-            <text x="50" y="54" font-family="'Baloo 2', sans-serif" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle">₹10</text>
-          </svg>
-        </div>
-
-        <button
-          id="unlock-shagun-btn"
-          type="button"
-          class="w-full py-3 rounded-xl bg-gradient-to-r from-lime-600 to-amber-600 hover:from-lime-500 hover:to-amber-500 text-white font-display font-bold text-sm shadow-md mb-2 cursor-pointer"
-        >
-          Maine Pay Kar Diya Hai! 🤞
-        </button>
-        <p class="text-[10px] text-zinc-500 italic">
-          Honor system — koi real payment nahi, bas maze ke liye 😄
-        </p>
       </div>
     </div>
 
@@ -379,10 +320,9 @@ import '../styles/global.css';
     <script>
       import { soundEngine } from '../scripts/audio';
 
-      // Flavors definition
-      type Flavor = 'saada' | 'nimbu' | 'kesar';
+      // Flavors definition (Saada Classic & Nimbu Masala)
+      type Flavor = 'saada' | 'nimbu';
       let selectedFlavor: Flavor = 'saada';
-      let isKesarUnlocked = false;
       let isFinished = false;
 
       // Views & Elements
@@ -402,26 +342,146 @@ import '../styles/global.css';
       const pourStreamLeft = document.getElementById('pour-stream');
       const pourStreamRight = document.getElementById('pour-stream-right');
 
-      // Jukebox Elements
+      // Jukebox / Music Elements
       const jukeboxPill = document.getElementById('jukebox-pill');
-      const jbPlayBtn = document.getElementById('jb-play-btn');
+      const jbTrackName = document.getElementById('jb-track-name');
+      const jbNextBtn = document.getElementById('jb-next-btn');
+      const lofiToggleBtn = document.getElementById('lofi-toggle-btn');
+      const lofiIcon = document.getElementById('lofi-icon');
+      const lofiText = document.getElementById('lofi-text');
 
       // Menu Cards
       const tapriPills = document.querySelectorAll('.tapri-pill');
-      const kesarIcon = document.getElementById('kesar-icon');
-      const kesarDesc = document.getElementById('kesar-desc');
-      const shagunModal = document.getElementById('shagun-modal');
-      const unlockShagunBtn = document.getElementById('unlock-shagun-btn');
 
       // Preview glass elements
       const previewLiquid = document.getElementById('preview-liquid');
       const previewMint = document.getElementById('preview-mint');
-      const previewKesar = document.getElementById('preview-kesar');
 
-      // Audio Lo-Fi in menu
-      const lofiToggleBtn = document.getElementById('lofi-toggle-btn');
-      const lofiIcon = document.getElementById('lofi-icon');
-      const lofiText = document.getElementById('lofi-text');
+      // =========================================================
+      // YOUTUBE BACKGROUND AUDIO SYSTEM (ZERO VISIBLE UI)
+      // Plays provided tracks continuously, loops, respects autoplay policies,
+      // syncs with mute/unmute, and allows switching between tracks.
+      // Track 1: https://www.youtube.com/shorts/zrzAbBTkFr8
+      // Track 2: https://www.youtube.com/watch?v=h6fq7sbxwBg
+      // =========================================================
+      const YT_TRACKS = [
+        { id: 'zrzAbBTkFr8', title: 'Sugarcane Groove' },
+        { id: 'h6fq7sbxwBg', title: 'Tapri Rhythm' },
+      ];
+      let currentTrackIdx = 0;
+      let ytPlayer: any = null;
+      let isYtReady = false;
+
+      function updateMusicUI(isPlaying: boolean) {
+        const track = YT_TRACKS[currentTrackIdx];
+        if (lofiIcon) lofiIcon.textContent = isPlaying ? '🎵' : '⏸️';
+        if (lofiText) lofiText.textContent = track.title;
+        if (jbTrackName) jbTrackName.textContent = track.title;
+      }
+
+      function switchTrack() {
+        currentTrackIdx = (currentTrackIdx + 1) % YT_TRACKS.length;
+        const nextTrack = YT_TRACKS[currentTrackIdx];
+        if (ytPlayer && isYtReady) {
+          try {
+            ytPlayer.loadVideoById({
+              videoId: nextTrack.id,
+              startSeconds: 0,
+            });
+            if (!soundEngine.getMuted()) {
+              ytPlayer.unMute();
+              ytPlayer.setVolume(35);
+              ytPlayer.playVideo();
+            }
+          } catch (e) {
+            console.warn('Track switch error:', e);
+          }
+        }
+        updateMusicUI(!soundEngine.getMuted());
+        showToast(`🎵 Playing: ${nextTrack.title}`);
+      }
+
+      function syncMuteState(isMuted: boolean) {
+        updateMuteUI(isMuted);
+        if (ytPlayer && isYtReady) {
+          try {
+            if (isMuted) {
+              ytPlayer.mute();
+            } else {
+              ytPlayer.unMute();
+              ytPlayer.setVolume(35);
+              ytPlayer.playVideo();
+            }
+          } catch {}
+        }
+        updateMusicUI(!isMuted);
+      }
+
+      // Initialize YouTube IFrame Player
+      (window as any).onYouTubeIframeAPIReady = () => {
+        try {
+          ytPlayer = new (window as any).YT.Player('yt-player', {
+            height: '1',
+            width: '1',
+            videoId: YT_TRACKS[currentTrackIdx].id,
+            playerVars: {
+              autoplay: 1,
+              loop: 1,
+              playlist: YT_TRACKS[currentTrackIdx].id,
+              controls: 0,
+              showinfo: 0,
+              rel: 0,
+              modestbranding: 1,
+              playsinline: 1,
+              enablejsapi: 1,
+              origin: window.location.origin,
+            },
+            events: {
+              onReady: (e: any) => {
+                isYtReady = true;
+                e.target.setVolume(35);
+                if (!soundEngine.getMuted()) {
+                  e.target.unMute();
+                  e.target.playVideo();
+                } else {
+                  e.target.mute();
+                }
+                updateMusicUI(!soundEngine.getMuted());
+              },
+              onStateChange: (e: any) => {
+                if (e.data === (window as any).YT?.PlayerState?.ENDED) {
+                  ytPlayer?.playVideo();
+                }
+              },
+            },
+          });
+        } catch (err) {
+          console.warn('YouTube player init:', err);
+        }
+      };
+
+      // Load YouTube IFrame API Script
+      if (typeof window !== 'undefined' && !(window as any).YT) {
+        const tag = document.createElement('script');
+        tag.src = 'https://www.youtube.com/iframe_api';
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag?.parentNode?.insertBefore(tag, firstScriptTag);
+      }
+
+      // Autoplay fallback: if blocked on initial page load, start on very first user interaction anywhere
+      const firstInteractionEvents = ['pointerdown', 'touchstart', 'click', 'keydown'];
+      const handleFirstAudioUnlock = () => {
+        if (ytPlayer && isYtReady && !soundEngine.getMuted()) {
+          try {
+            ytPlayer.unMute();
+            ytPlayer.setVolume(35);
+            ytPlayer.playVideo();
+            updateMusicUI(true);
+          } catch {}
+        }
+        firstInteractionEvents.forEach((evt) => window.removeEventListener(evt, handleFirstAudioUnlock));
+      };
+      firstInteractionEvents.forEach((evt) => window.addEventListener(evt, handleFirstAudioUnlock, { passive: true }));
 
       function showToast(msg: string) {
         const toast = document.getElementById('app-toast');
@@ -435,12 +495,6 @@ import '../styles/global.css';
         }, 2200);
       }
 
-      function updateAudioUI(isPlaying: boolean) {
-        if (lofiIcon) lofiIcon.textContent = isPlaying ? '⏸️' : '▶️';
-        if (lofiText) lofiText.textContent = isPlaying ? 'Tapri Lo-Fi (Playing 🎵)' : 'Ganna Tapri – Later';
-        if (jbPlayBtn) jbPlayBtn.textContent = isPlaying ? '⏸️' : '▶️';
-      }
-
       function updateMuteUI(isMuted: boolean) {
         if (soundIcon) soundIcon.textContent = isMuted ? '🔇' : '🔊';
         const menuSoundIcon = document.getElementById('menu-sound-icon');
@@ -449,57 +503,51 @@ import '../styles/global.css';
 
       // Initialize mute state on page load (Default: Unmuted 🔊)
       updateMuteUI(soundEngine.getMuted());
+      updateMusicUI(!soundEngine.getMuted());
 
       const menuMuteBtn = document.getElementById('menu-mute-btn');
       menuMuteBtn?.addEventListener('click', (e) => {
         e.stopPropagation();
         const isMuted = soundEngine.toggleMute();
-        updateMuteUI(isMuted);
-        showToast(isMuted ? '🔇 Sound Muted' : '🔊 Sound Unmuted');
+        syncMuteState(isMuted);
+        showToast(isMuted ? '🔇 Sound Muted' : '🔊 Sound Enabled');
       });
 
-      audioToggleBtn?.addEventListener('click', () => {
+      audioToggleBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
         const isMuted = soundEngine.toggleMute();
-        updateMuteUI(isMuted);
-        showToast(isMuted ? '🔇 Sound Muted' : '🔊 Sound Unmuted');
+        syncMuteState(isMuted);
+        showToast(isMuted ? '🔇 Sound Muted' : '🔊 Sound Enabled');
       });
 
-      lofiToggleBtn?.addEventListener('click', () => {
+      // Switch to next background track
+      lofiToggleBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
         soundEngine.playClick();
-        const isPlaying = soundEngine.toggleLofi();
-        updateAudioUI(isPlaying);
-        showToast(isPlaying ? '🎵 Tapri Chill Lo-Fi Started' : 'Audio Paused');
+        switchTrack();
       });
 
-      jukeboxPill?.addEventListener('click', () => {
+      jukeboxPill?.addEventListener('click', (e) => {
+        e.stopPropagation();
         soundEngine.playClick();
-        const isPlaying = soundEngine.toggleLofi();
-        updateAudioUI(isPlaying);
+        switchTrack();
+      });
+
+      jbNextBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        soundEngine.playClick();
+        switchTrack();
       });
 
       // Flavor selection in menu
       tapriPills.forEach((pill) => {
-        pill.addEventListener('click', () => {
+        pill.addEventListener('click', (e) => {
+          e.stopPropagation();
           const flavor = pill.getAttribute('data-flavor') as Flavor;
-          if (flavor === 'kesar' && !isKesarUnlocked) {
-            shagunModal?.classList.remove('hidden');
-            return;
-          }
           selectedFlavor = flavor;
           soundEngine.playClick();
           updateMenuUI();
         });
-      });
-
-      unlockShagunBtn?.addEventListener('click', () => {
-        isKesarUnlocked = true;
-        selectedFlavor = 'kesar';
-        shagunModal?.classList.add('hidden');
-        if (kesarIcon) kesarIcon.textContent = '👑';
-        if (kesarDesc) kesarDesc.textContent = 'Unlocked Shahi Blend';
-        soundEngine.playCheers();
-        showToast('👑 Shahi Kesar Unlocked!');
-        updateMenuUI();
       });
 
       function updateMenuUI() {
@@ -515,18 +563,12 @@ import '../styles/global.css';
         });
 
         // Update preview glass
-        if (selectedFlavor === 'kesar') {
-          previewLiquid?.setAttribute('fill', 'url(#previewKesarGrad)');
-          previewKesar?.classList.remove('hidden');
-          previewMint?.classList.add('hidden');
-        } else if (selectedFlavor === 'nimbu') {
+        if (selectedFlavor === 'nimbu') {
           previewLiquid?.setAttribute('fill', 'url(#previewJuiceGrad)');
           previewMint?.classList.remove('hidden');
-          previewKesar?.classList.add('hidden');
         } else {
           previewLiquid?.setAttribute('fill', 'url(#previewJuiceGrad)');
           previewMint?.classList.add('hidden');
-          previewKesar?.classList.add('hidden');
         }
       }
 
@@ -1045,20 +1087,14 @@ import '../styles/global.css';
             const meanY = (this.nodes[0].y + this.nodes[this.nodeCount - 1].y) / 2;
             const juiceGrad = ctx.createLinearGradient(w / 2, meanY, w / 2, bottomY);
 
-            if (selectedFlavor === 'kesar') {
-              juiceGrad.addColorStop(0, '#FFE082');
-              juiceGrad.addColorStop(0.25, '#FFB300');
-              juiceGrad.addColorStop(0.65, '#E65100');
-              juiceGrad.addColorStop(0.85, '#9C2706');
-              juiceGrad.addColorStop(1, '#4E1103');
-            } else if (selectedFlavor === 'nimbu') {
+            if (selectedFlavor === 'nimbu') {
               juiceGrad.addColorStop(0, '#F3FF96');
               juiceGrad.addColorStop(0.25, '#D4F138');
               juiceGrad.addColorStop(0.65, '#A3C914');
               juiceGrad.addColorStop(0.85, '#5C7C0B');
               juiceGrad.addColorStop(1, '#2E3F05');
             } else {
-              // Classic Saada Ganna
+              // Classic Cane
               juiceGrad.addColorStop(0, '#E4F78F');
               juiceGrad.addColorStop(0.25, '#C5E038');
               juiceGrad.addColorStop(0.65, '#99B816');
@@ -1085,7 +1121,7 @@ import '../styles/global.css';
               }
             }
 
-            // 5. Floating Garnishes (Ice, Mint, Saffron)
+            // 5. Floating Garnishes (Ice, Mint)
             // Ice cube 1
             const iceCol = this.nodes[Math.floor(this.nodeCount * 0.35)];
             if (iceCol && this.juiceLevel > 0.05) {
@@ -1126,22 +1162,6 @@ import '../styles/global.css';
                 ctx.beginPath();
                 ctx.ellipse(0, 0, 13, 7, 0.2, 0, Math.PI * 2);
                 ctx.fill();
-                ctx.stroke();
-                ctx.restore();
-              }
-            }
-
-            // Saffron strand for Kesar
-            if (selectedFlavor === 'kesar') {
-              const kesarCol = this.nodes[Math.floor(this.nodeCount * 0.48)];
-              if (kesarCol && this.juiceLevel > 0.05) {
-                ctx.save();
-                ctx.translate(kesarCol.x, kesarCol.y + 2);
-                ctx.strokeStyle = '#DC2626';
-                ctx.lineWidth = 2.4;
-                ctx.beginPath();
-                ctx.moveTo(-14, 0);
-                ctx.quadraticCurveTo(0, -6, 14, 2);
                 ctx.stroke();
                 ctx.restore();
               }
@@ -1352,9 +1372,9 @@ import '../styles/global.css';
           // Live percentage display
           const remainingPct = Math.round(liquidRenderer.targetJuiceLevel * 100);
           if (sipCountBadge) sipCountBadge.textContent = `${remainingPct}%`;
-          if (sipCardTitle) sipCardTitle.textContent = 'Gatak Gatak... 🥤 Piyo!';
+          if (sipCardTitle) sipCardTitle.textContent = 'Sipping... Pure Refreshment! 🥤';
           if (sipCardDesc) {
-            sipCardDesc.textContent = 'Gatak gatak... peete raho! Lower phone to pause.';
+            sipCardDesc.textContent = 'Keep tilted to drink — lower phone to pause.';
           }
 
           if (liquidRenderer.targetJuiceLevel <= 0.005) {
@@ -1362,23 +1382,23 @@ import '../styles/global.css';
             liquidRenderer.juiceLevel = 0;
             isFinished = true;
             soundEngine.playCheers();
-            if (sipCardTitle) sipCardTitle.textContent = 'GLASS KHATAM! 🎉';
-            if (sipCardDesc) sipCardDesc.textContent = 'Sukoon: 100% Guaranteed ☀️ Taaza Ganna Baar!';
+            if (sipCardTitle) sipCardTitle.textContent = 'GLASS FINISHED! 🎉';
+            if (sipCardDesc) sipCardDesc.textContent = '100% Pure Refreshment ☀️ Ganna Baar!';
             if (sipCountBadge) sipCountBadge.textContent = '0%';
             sipTapCard?.classList.add('hidden');
             finishReplayBtn?.classList.remove('hidden');
             finishReplayBtn?.classList.add('flex');
             pourStreamLeft?.classList.add('opacity-0');
-            showToast('🎉 Glass Khatam! Asli desi sukoon mil gaya!');
+            showToast('🎉 Glass Finished! 100% pure refreshment!');
           }
         } else if (!isFinished && liquidRenderer) {
           // Normal movement / below threshold: Consumption is STOPPED immediately!
           pourStreamLeft?.classList.add('opacity-0');
           pourStreamRight?.classList.add('opacity-0');
 
-          if (sipCardTitle) sipCardTitle.textContent = 'Chuski Lo — Asli Sukoon';
+          if (sipCardTitle) sipCardTitle.textContent = 'Take a Sip — Pure Refreshment';
           if (sipCardDesc) {
-            sipCardDesc.textContent = 'Hold phone like a real glass & tilt upside-down to drink!';
+            sipCardDesc.textContent = 'Hold phone like a real glass & tilt to drink, or tap the glass!';
           }
         }
 
@@ -1405,15 +1425,15 @@ import '../styles/global.css';
         liquidRenderer.splash(0.5, 12.0);
         const remainingPct = Math.round(liquidRenderer.targetJuiceLevel * 100);
         if (sipCountBadge) sipCountBadge.textContent = `${remainingPct}%`;
-        showToast(`🥤 Tap Sip! Bacha: ${remainingPct}%`);
+        showToast(`🥤 Sipped! Remaining: ${remainingPct}%`);
 
         if (liquidRenderer.targetJuiceLevel <= 0.005) {
           liquidRenderer.targetJuiceLevel = 0;
           liquidRenderer.juiceLevel = 0;
           isFinished = true;
           soundEngine.playCheers();
-          if (sipCardTitle) sipCardTitle.textContent = 'GLASS KHATAM! 🎉';
-          if (sipCardDesc) sipCardDesc.textContent = 'Sukoon: 100% Guaranteed ☀️ Taaza Ganna Baar!';
+          if (sipCardTitle) sipCardTitle.textContent = 'GLASS FINISHED! 🎉';
+          if (sipCardDesc) sipCardDesc.textContent = '100% Pure Refreshment ☀️ Ganna Baar!';
           if (sipCountBadge) sipCountBadge.textContent = '0%';
           sipTapCard?.classList.add('hidden');
           finishReplayBtn?.classList.remove('hidden');
@@ -1425,8 +1445,8 @@ import '../styles/global.css';
         isFinished = false;
         sensorManager.calibrate();
         if (sipCountBadge) sipCountBadge.textContent = '100%';
-        if (sipCardTitle) sipCardTitle.textContent = 'Chuski Lo — Asli Sukoon';
-        if (sipCardDesc) sipCardDesc.textContent = 'Hold the phone like a real glass and tilt upside-down to drink!';
+        if (sipCardTitle) sipCardTitle.textContent = 'Take a Sip — Pure Refreshment';
+        if (sipCardDesc) sipCardDesc.textContent = 'Hold phone like a real glass & tilt to drink, or tap the glass!';
         sipTapCard?.classList.remove('hidden');
         finishReplayBtn?.classList.add('hidden');
         finishReplayBtn?.classList.remove('flex');
@@ -1437,23 +1457,27 @@ import '../styles/global.css';
         }
       }
 
-      // Tap on bottom card to sip
-      sipTapCard?.addEventListener('click', () => {
+      // Tap specifically on bottom card to sip
+      sipTapCard?.addEventListener('click', (e) => {
+        e.stopPropagation();
         takeManualSip();
       });
 
-      resetBtn?.addEventListener('click', () => {
+      resetBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
         soundEngine.playClick();
         resetGlass();
       });
 
-      finishReplayBtn?.addEventListener('click', () => {
+      finishReplayBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
         soundEngine.playClick();
         resetGlass();
       });
 
       // Transition from Menu to Full-Screen Drinking View
-      openGlassBtn?.addEventListener('click', () => {
+      openGlassBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
         sensorManager.requestAccess();
         sensorManager.calibrate();
         soundEngine.playClick();
@@ -1463,7 +1487,7 @@ import '../styles/global.css';
         viewDrinking?.classList.add('block');
 
         if (sipFlavorIcon) {
-          sipFlavorIcon.textContent = selectedFlavor === 'kesar' ? '👑' : selectedFlavor === 'nimbu' ? '🍋' : '🌾';
+          sipFlavorIcon.textContent = selectedFlavor === 'nimbu' ? '🍋' : '🌾';
         }
 
         resetGlass();
@@ -1477,39 +1501,60 @@ import '../styles/global.css';
         }
       });
 
-      backToMenuBtn?.addEventListener('click', () => {
+      backToMenuBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
         soundEngine.playClick();
         viewDrinking?.classList.add('hidden');
         viewDrinking?.classList.remove('block');
         viewMenu?.classList.remove('hidden');
       });
 
-      // Tap on glass directly to sip (Zero fake roll simulation)
-      let dragStartX = 0;
-      let dragStartY = 0;
-      let totalDragDist = 0;
+      // =========================================================
+      // GLASS INTERACTION HIT-TESTING (PREVENTS ACCIDENTAL OUTSIDE TAPS)
+      // Only clicks/touches physically inside the glass tumbler decrease juice.
+      // Clicks on background, margins, headers, or empty space do NOT decrease juice!
+      // =========================================================
+      function isPointInsideGlass(x: number, y: number, h: number): boolean {
+        if (!liquidRenderer) return false;
+        const topY = liquidRenderer.topRimY;
+        const bottomY = h - 20;
+        if (y < topY || y > bottomY) return false;
 
-      window.addEventListener('pointerdown', (e) => {
-        // Any first tap/touch registers user-gesture and triggers sensor permission & listeners
-        sensorManager.requestAccess();
-        if (viewDrinking?.classList.contains('hidden')) return;
-        const target = e.target as HTMLElement;
-        if (target.closest('button') || target.closest('#sip-tap-card') || target.closest('#jukebox-pill')) return;
-        dragStartX = e.clientX;
-        dragStartY = e.clientY;
-        totalDragDist = 0;
-      });
+        const t = (y - topY) / (bottomY - topY);
+        const leftX = liquidRenderer.glassTx1 + (liquidRenderer.glassBx1 - liquidRenderer.glassTx1) * t;
+        const rightX = liquidRenderer.glassTx2 + (liquidRenderer.glassBx2 - liquidRenderer.glassTx2) * t;
 
-      window.addEventListener('pointermove', (e) => {
-        const deltaX = e.clientX - dragStartX;
-        const deltaY = e.clientY - dragStartY;
-        totalDragDist = Math.max(totalDragDist, Math.hypot(deltaX, deltaY));
-      });
+        return x >= leftX && x <= rightX;
+      }
 
-      window.addEventListener('pointerup', () => {
-        if (viewDrinking?.classList.contains('hidden')) return;
-        if (totalDragDist < 8 && !isFinished) {
+      // Tap specifically on the glass tumbler on canvas to sip
+      canvas?.addEventListener('click', (e: MouseEvent) => {
+        if (viewDrinking?.classList.contains('hidden') || isFinished) return;
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        if (isPointInsideGlass(x, y, window.innerHeight)) {
+          const normX = x / window.innerWidth;
+          liquidRenderer?.splash(normX, 15);
           takeManualSip();
+        }
+      });
+
+      // Touch tap specifically on the glass tumbler on mobile
+      canvas?.addEventListener('touchend', (e: TouchEvent) => {
+        if (viewDrinking?.classList.contains('hidden') || isFinished) return;
+        if (e.changedTouches.length > 0) {
+          const touch = e.changedTouches[0];
+          const rect = canvas.getBoundingClientRect();
+          const x = touch.clientX - rect.left;
+          const y = touch.clientY - rect.top;
+
+          if (isPointInsideGlass(x, y, window.innerHeight)) {
+            const normX = x / window.innerWidth;
+            liquidRenderer?.splash(normX, 15);
+            takeManualSip();
+          }
         }
       });
 
