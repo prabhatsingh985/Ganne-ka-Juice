@@ -73,7 +73,41 @@ import '../styles/global.css';
           AUTHENTIC CANE EXPERIENCE
         </div>
 
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-1.5 sm:gap-2">
+          <!-- Play / Resume / Pause Button -->
+          <button
+            id="menu-play-pause-btn"
+            type="button"
+            class="w-8 h-8 rounded-full border border-lime-500/40 bg-black/60 hover:bg-black/80 backdrop-blur-md flex items-center justify-center text-xs text-lime-300 cursor-pointer active:scale-95 transition-all shadow-md"
+            title="Play / Pause Music"
+            aria-label="Play or Pause Music"
+          >
+            <span id="menu-play-icon">⏸️</span>
+          </button>
+
+          <!-- Stop Button -->
+          <button
+            id="menu-stop-btn"
+            type="button"
+            class="w-8 h-8 rounded-full border border-zinc-700 bg-black/50 hover:bg-black/70 backdrop-blur-md flex items-center justify-center text-xs text-zinc-300 cursor-pointer active:scale-95 transition-all shadow-md"
+            title="Stop Music (Reset to 0:00)"
+            aria-label="Stop Music"
+          >
+            <span>⏹️</span>
+          </button>
+
+          <!-- YouTube Music Player Switcher -->
+          <button
+            id="lofi-toggle-btn"
+            type="button"
+            class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/40 hover:bg-black/60 border border-white/10 text-white text-xs font-mono backdrop-blur-md transition-all active:scale-95 cursor-pointer shadow-lg"
+            title="Switch to next background song"
+            aria-label="Switch Background Music"
+          >
+            <span class="text-xs text-lime-400">🔄</span>
+            <span id="lofi-text" class="text-[11px] font-medium text-zinc-200 max-w-[80px] sm:max-w-none truncate">Sugarcane Groove</span>
+          </button>
+
           <!-- Mute / Unmute Button -->
           <button
             id="menu-mute-btn"
@@ -83,19 +117,6 @@ import '../styles/global.css';
             aria-label="Toggle Sound"
           >
             <span id="menu-sound-icon">🔊</span>
-          </button>
-
-          <!-- YouTube Music Player Switcher -->
-          <button
-            id="lofi-toggle-btn"
-            type="button"
-            class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/40 hover:bg-black/60 border border-white/10 text-white text-xs font-mono backdrop-blur-md transition-all active:scale-95 cursor-pointer shadow-lg"
-            title="Click to switch background music"
-            aria-label="Switch Background Music"
-          >
-            <span class="text-zinc-400 text-[10px]">⏭️</span>
-            <span id="lofi-icon" class="text-lime-400 text-xs">🎵</span>
-            <span id="lofi-text" class="text-[11px] font-medium text-zinc-200">Sugarcane Groove</span>
           </button>
         </div>
       </div>
@@ -158,9 +179,64 @@ import '../styles/global.css';
         </svg>
       </div>
 
+      <!-- Which glass would you like? Glass Size Selection -->
+      <div class="w-full mb-4">
+        <h3 class="text-sm sm:text-base font-display font-extrabold text-white tracking-wide mb-0.5 flex items-center justify-center gap-2">
+          <span>Which glass would you like?</span>
+        </h3>
+        <p class="text-[11px] font-body text-zinc-400 mb-2.5">
+          Select your size to pour
+        </p>
+
+        <!-- 3 Glass Size Options -->
+        <div class="grid grid-cols-3 gap-2.5 w-full" id="glass-size-selector">
+          <!-- Option 1: Small (20) -->
+          <button
+            type="button"
+            data-size="small"
+            data-amount="20"
+            class="glass-size-card p-3 rounded-2xl border-2 transition-all cursor-pointer flex flex-col items-center justify-between border-zinc-800 bg-zinc-900/40 hover:bg-zinc-900/70 shadow-sm"
+          >
+            <span class="text-2xl block mb-1">🥃</span>
+            <span class="font-display font-bold text-xs sm:text-sm text-white block leading-tight">Small</span>
+            <span class="size-val-badge mt-2 px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-zinc-800/80 text-zinc-300 border border-zinc-700">
+              20
+            </span>
+          </button>
+
+          <!-- Option 2: Medium (40) - Default Selected -->
+          <button
+            type="button"
+            data-size="medium"
+            data-amount="40"
+            class="glass-size-card p-3 rounded-2xl border-2 transition-all cursor-pointer flex flex-col items-center justify-between border-lime-500 bg-lime-950/40 glow-green shadow-md ring-1 ring-lime-400/40"
+          >
+            <span class="text-2xl block mb-1">🥛</span>
+            <span class="font-display font-bold text-xs sm:text-sm text-white block leading-tight">Medium</span>
+            <span class="size-val-badge mt-2 px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-lime-900/80 text-lime-300 border border-lime-500/50">
+              40
+            </span>
+          </button>
+
+          <!-- Option 3: Large (50) -->
+          <button
+            type="button"
+            data-size="large"
+            data-amount="50"
+            class="glass-size-card p-3 rounded-2xl border-2 transition-all cursor-pointer flex flex-col items-center justify-between border-zinc-800 bg-zinc-900/40 hover:bg-zinc-900/70 shadow-sm"
+          >
+            <span class="text-2xl block mb-1">🍹</span>
+            <span class="font-display font-bold text-xs sm:text-sm text-white block leading-tight">Large</span>
+            <span class="size-val-badge mt-2 px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-zinc-800/80 text-zinc-300 border border-zinc-700">
+              50
+            </span>
+          </button>
+        </div>
+      </div>
+
       <!-- Juice Menu Label -->
       <span class="text-[11px] font-display font-bold text-zinc-500 uppercase tracking-widest mb-2.5">
-        JUICE MENU
+        CHOOSE FLAVOR
       </span>
 
       <!-- Horizontal Menu Cards (2 Flavors) -->
@@ -202,7 +278,7 @@ import '../styles/global.css';
         type="button"
         class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-lime-600 via-emerald-600 to-amber-500 hover:from-lime-500 hover:to-amber-400 text-white font-display font-bold text-lg shadow-lg hover:shadow-lime-500/25 transition-all transform active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
       >
-        <span>Pour Juice — Fill Glass! 🥤</span>
+        <span id="cta-btn-text">Pour Medium Glass (40) — Fill! 🥤</span>
       </button>
 
       <!-- Bottom Privacy Tagline -->
@@ -261,18 +337,29 @@ import '../styles/global.css';
         </div>
       </header>
 
-      <!-- Jukebox Player Pill: Floating at upper right -->
+      <!-- Jukebox Player Bar: Floating at upper right -->
       <div
         id="jukebox-pill"
-        class="absolute top-14 right-4 z-20 flex items-center gap-2.5 px-3.5 py-1.5 rounded-full border border-lime-500/30 bg-[#0e1b09]/85 backdrop-blur-md shadow-xl cursor-pointer active:scale-95 transition-all pointer-events-auto"
-        title="Click to switch background music"
+        class="absolute top-14 right-4 z-20 flex items-center gap-2 px-3 py-1.5 rounded-full border border-lime-500/30 bg-[#0e1b09]/90 backdrop-blur-md shadow-xl pointer-events-auto transition-all"
       >
-        <div class="text-[10px] text-right leading-tight">
-          <span class="text-[8px] text-amber-400 font-bold tracking-widest block">NOW PLAYING</span>
-          <span id="jb-track-name" class="text-zinc-200 font-medium block">Sugarcane Groove</span>
+        <div class="text-[10px] text-right leading-tight pr-1.5 border-r border-zinc-800">
+          <span class="text-[8px] text-amber-400 font-bold tracking-widest block">MUSIC</span>
+          <span id="jb-track-name" class="text-zinc-200 font-medium block max-w-[80px] truncate">Sugarcane Groove</span>
         </div>
-        <button id="jb-next-btn" type="button" class="text-xs text-lime-400" title="Next Song">⏭️</button>
-        <span class="text-base animate-spin" style="animation-duration: 4s;">💿</span>
+        <!-- Play / Pause -->
+        <button id="jb-play-pause-btn" type="button" class="text-xs hover:scale-110 active:scale-95 transition-all cursor-pointer p-0.5" title="Play / Pause">
+          <span id="jb-play-icon">⏸️</span>
+        </button>
+        <!-- Stop -->
+        <button id="jb-stop-btn" type="button" class="text-xs hover:scale-110 active:scale-95 transition-all cursor-pointer p-0.5" title="Stop (Reset to Start)">
+          <span>⏹️</span>
+        </button>
+        <!-- Next Track -->
+        <button id="jb-next-btn" type="button" class="text-xs hover:scale-110 active:scale-95 transition-all cursor-pointer p-0.5" title="Switch to Next Song">
+          <span>🔄</span>
+        </button>
+        <!-- Spinning Disc -->
+        <span id="jb-disc-icon" class="text-sm animate-spin" style="animation-duration: 4s;">💿</span>
       </div>
 
       <!-- Pouring Droplets Stream when tilted past mouth threshold -->
@@ -325,11 +412,22 @@ import '../styles/global.css';
       let selectedFlavor: Flavor = 'saada';
       let isFinished = false;
 
+      // Glass sizes: Small (20), Medium (40), Large (50)
+      type GlassSize = 'small' | 'medium' | 'large';
+      const GLASS_CONFIG: Record<GlassSize, { name: string; amount: number; icon: string; drainRate: number }> = {
+        small: { name: 'Small', amount: 20, icon: '🥃', drainRate: 0.22 },
+        medium: { name: 'Medium', amount: 40, icon: '🥛', drainRate: 0.17 },
+        large: { name: 'Large', amount: 50, icon: '🍹', drainRate: 0.14 },
+      };
+      let selectedGlassSize: GlassSize = 'medium';
+      let currentCapacity = GLASS_CONFIG.medium.amount; // 40
+
       // Views & Elements
       const viewMenu = document.getElementById('view-menu');
       const viewDrinking = document.getElementById('view-drinking');
       const backToMenuBtn = document.getElementById('back-to-menu-btn');
       const openGlassBtn = document.getElementById('open-glass-btn');
+      const ctaBtnText = document.getElementById('cta-btn-text');
       const sipTapCard = document.getElementById('sip-tap-card');
       const sipFlavorIcon = document.getElementById('sip-flavor-icon');
       const sipCardTitle = document.getElementById('sip-card-title');
@@ -342,27 +440,39 @@ import '../styles/global.css';
       const pourStreamLeft = document.getElementById('pour-stream');
       const pourStreamRight = document.getElementById('pour-stream-right');
 
-      // Jukebox / Music Elements
-      const jukeboxPill = document.getElementById('jukebox-pill');
-      const jbTrackName = document.getElementById('jb-track-name');
-      const jbNextBtn = document.getElementById('jb-next-btn');
+      // Music Player Elements (Menu Header)
+      const menuPlayPauseBtn = document.getElementById('menu-play-pause-btn');
+      const menuPlayIcon = document.getElementById('menu-play-icon');
+      const menuStopBtn = document.getElementById('menu-stop-btn');
+      const menuMuteBtn = document.getElementById('menu-mute-btn');
+      const menuSoundIcon = document.getElementById('menu-sound-icon');
       const lofiToggleBtn = document.getElementById('lofi-toggle-btn');
-      const lofiIcon = document.getElementById('lofi-icon');
       const lofiText = document.getElementById('lofi-text');
 
-      // Menu Cards
+      // Music Player Elements (Drinking View HUD)
+      const jbTrackName = document.getElementById('jb-track-name');
+      const jbPlayPauseBtn = document.getElementById('jb-play-pause-btn');
+      const jbPlayIcon = document.getElementById('jb-play-icon');
+      const jbStopBtn = document.getElementById('jb-stop-btn');
+      const jbNextBtn = document.getElementById('jb-next-btn');
+      const jbDiscIcon = document.getElementById('jb-disc-icon');
+
+      // Menu Cards & Glass Size Selector
       const tapriPills = document.querySelectorAll('.tapri-pill');
+      const glassSizeCards = document.querySelectorAll('.glass-size-card');
 
       // Preview glass elements
       const previewLiquid = document.getElementById('preview-liquid');
       const previewMint = document.getElementById('preview-mint');
 
       // =========================================================
-      // YOUTUBE BACKGROUND AUDIO SYSTEM (ZERO VISIBLE UI)
-      // Plays provided tracks continuously, loops, respects autoplay policies,
-      // syncs with mute/unmute, and allows switching between tracks.
-      // Track 1: https://www.youtube.com/shorts/zrzAbBTkFr8
-      // Track 2: https://www.youtube.com/watch?v=h6fq7sbxwBg
+      // YOUTUBE BACKGROUND AUDIO SYSTEM
+      // Supports:
+      // ▶️ Play / Resume (continues from exact paused timestamp)
+      // ⏸️ Pause (temporarily halts, preserving position)
+      // ⏹️ Stop (completely stops and resets position to 0:00)
+      // 🔄 Switch track (cycles tracks)
+      // 🔊 Mute / Unmute
       // =========================================================
       const YT_TRACKS = [
         { id: 'zrzAbBTkFr8', title: 'Sugarcane Groove' },
@@ -372,11 +482,86 @@ import '../styles/global.css';
       let ytPlayer: any = null;
       let isYtReady = false;
 
-      function updateMusicUI(isPlaying: boolean) {
+      type PlaybackState = 'playing' | 'paused' | 'stopped';
+      let playbackState: PlaybackState = 'playing';
+
+      function updateMusicUI() {
         const track = YT_TRACKS[currentTrackIdx];
-        if (lofiIcon) lofiIcon.textContent = isPlaying ? '🎵' : '⏸️';
+        const isPlaying = playbackState === 'playing';
+
+        // Play/Pause icon sync
+        if (menuPlayIcon) menuPlayIcon.textContent = isPlaying ? '⏸️' : '▶️';
+        if (jbPlayIcon) jbPlayIcon.textContent = isPlaying ? '⏸️' : '▶️';
+
+        // Track title sync
         if (lofiText) lofiText.textContent = track.title;
         if (jbTrackName) jbTrackName.textContent = track.title;
+
+        // Disc rotation sync
+        if (jbDiscIcon) {
+          if (isPlaying) {
+            jbDiscIcon.classList.add('animate-spin');
+          } else {
+            jbDiscIcon.classList.remove('animate-spin');
+          }
+        }
+      }
+
+      function playOrResumeMusic() {
+        if (ytPlayer && isYtReady) {
+          try {
+            if (playbackState === 'stopped') {
+              // Resuming after a complete stop starts from the beginning (0s)
+              ytPlayer.seekTo(0, true);
+            }
+            if (!soundEngine.getMuted()) {
+              ytPlayer.unMute();
+              ytPlayer.setVolume(35);
+            }
+            ytPlayer.playVideo();
+          } catch (e) {
+            console.warn('Play error:', e);
+          }
+        }
+        const wasPaused = playbackState === 'paused';
+        playbackState = 'playing';
+        updateMusicUI();
+        showToast(wasPaused ? '▶️ Music Resumed' : '▶️ Music Playing');
+      }
+
+      function pauseMusic() {
+        if (ytPlayer && isYtReady) {
+          try {
+            ytPlayer.pauseVideo(); // Freezes at exact current timestamp!
+          } catch (e) {
+            console.warn('Pause error:', e);
+          }
+        }
+        playbackState = 'paused';
+        updateMusicUI();
+        showToast('⏸️ Music Paused');
+      }
+
+      function togglePlayPause() {
+        if (playbackState === 'playing') {
+          pauseMusic();
+        } else {
+          playOrResumeMusic();
+        }
+      }
+
+      function stopMusic() {
+        if (ytPlayer && isYtReady) {
+          try {
+            ytPlayer.seekTo(0, true); // Reset position to beginning!
+            ytPlayer.pauseVideo();    // Halt playback!
+          } catch (e) {
+            console.warn('Stop error:', e);
+          }
+        }
+        playbackState = 'stopped';
+        updateMusicUI();
+        showToast('⏹️ Music Stopped (Reset to 0:00)');
       }
 
       function switchTrack() {
@@ -388,17 +573,22 @@ import '../styles/global.css';
               videoId: nextTrack.id,
               startSeconds: 0,
             });
-            if (!soundEngine.getMuted()) {
-              ytPlayer.unMute();
-              ytPlayer.setVolume(35);
-              ytPlayer.playVideo();
+            if (playbackState !== 'stopped') {
+              if (!soundEngine.getMuted()) {
+                ytPlayer.unMute();
+                ytPlayer.setVolume(35);
+                ytPlayer.playVideo();
+              }
+              playbackState = 'playing';
+            } else {
+              ytPlayer.pauseVideo();
             }
           } catch (e) {
             console.warn('Track switch error:', e);
           }
         }
-        updateMusicUI(!soundEngine.getMuted());
-        showToast(`🎵 Playing: ${nextTrack.title}`);
+        updateMusicUI();
+        showToast(`🔄 Track: ${nextTrack.title}`);
       }
 
       function syncMuteState(isMuted: boolean) {
@@ -410,11 +600,12 @@ import '../styles/global.css';
             } else {
               ytPlayer.unMute();
               ytPlayer.setVolume(35);
-              ytPlayer.playVideo();
+              if (playbackState === 'playing') {
+                ytPlayer.playVideo();
+              }
             }
           } catch {}
         }
-        updateMusicUI(!isMuted);
       }
 
       // Initialize YouTube IFrame Player
@@ -440,17 +631,19 @@ import '../styles/global.css';
               onReady: (e: any) => {
                 isYtReady = true;
                 e.target.setVolume(35);
-                if (!soundEngine.getMuted()) {
+                if (!soundEngine.getMuted() && playbackState === 'playing') {
                   e.target.unMute();
                   e.target.playVideo();
                 } else {
                   e.target.mute();
                 }
-                updateMusicUI(!soundEngine.getMuted());
+                updateMusicUI();
               },
               onStateChange: (e: any) => {
                 if (e.data === (window as any).YT?.PlayerState?.ENDED) {
-                  ytPlayer?.playVideo();
+                  if (playbackState === 'playing') {
+                    ytPlayer?.playVideo();
+                  }
                 }
               },
             },
@@ -471,12 +664,12 @@ import '../styles/global.css';
       // Autoplay fallback: if blocked on initial page load, start on very first user interaction anywhere
       const firstInteractionEvents = ['pointerdown', 'touchstart', 'click', 'keydown'];
       const handleFirstAudioUnlock = () => {
-        if (ytPlayer && isYtReady && !soundEngine.getMuted()) {
+        if (ytPlayer && isYtReady && !soundEngine.getMuted() && playbackState === 'playing') {
           try {
             ytPlayer.unMute();
             ytPlayer.setVolume(35);
             ytPlayer.playVideo();
-            updateMusicUI(true);
+            updateMusicUI();
           } catch {}
         }
         firstInteractionEvents.forEach((evt) => window.removeEventListener(evt, handleFirstAudioUnlock));
@@ -497,20 +690,56 @@ import '../styles/global.css';
 
       function updateMuteUI(isMuted: boolean) {
         if (soundIcon) soundIcon.textContent = isMuted ? '🔇' : '🔊';
-        const menuSoundIcon = document.getElementById('menu-sound-icon');
         if (menuSoundIcon) menuSoundIcon.textContent = isMuted ? '🔇' : '🔊';
       }
 
       // Initialize mute state on page load (Default: Unmuted 🔊)
       updateMuteUI(soundEngine.getMuted());
-      updateMusicUI(!soundEngine.getMuted());
+      updateMusicUI();
 
-      const menuMuteBtn = document.getElementById('menu-mute-btn');
+      // Menu Music Button Listeners
+      menuPlayPauseBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        soundEngine.playClick();
+        togglePlayPause();
+      });
+
+      menuStopBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        soundEngine.playClick();
+        stopMusic();
+      });
+
+      lofiToggleBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        soundEngine.playClick();
+        switchTrack();
+      });
+
       menuMuteBtn?.addEventListener('click', (e) => {
         e.stopPropagation();
         const isMuted = soundEngine.toggleMute();
         syncMuteState(isMuted);
         showToast(isMuted ? '🔇 Sound Muted' : '🔊 Sound Enabled');
+      });
+
+      // Drinking HUD Music Button Listeners
+      jbPlayPauseBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        soundEngine.playClick();
+        togglePlayPause();
+      });
+
+      jbStopBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        soundEngine.playClick();
+        stopMusic();
+      });
+
+      jbNextBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        soundEngine.playClick();
+        switchTrack();
       });
 
       audioToggleBtn?.addEventListener('click', (e) => {
@@ -520,23 +749,41 @@ import '../styles/global.css';
         showToast(isMuted ? '🔇 Sound Muted' : '🔊 Sound Enabled');
       });
 
-      // Switch to next background track
-      lofiToggleBtn?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        soundEngine.playClick();
-        switchTrack();
-      });
+      // Glass size selection logic
+      function updateGlassSizeUI() {
+        glassSizeCards.forEach((card) => {
+          const s = card.getAttribute('data-size') as GlassSize;
+          const badge = card.querySelector('.size-val-badge');
+          if (s === selectedGlassSize) {
+            card.classList.remove('border-zinc-800', 'bg-zinc-900/40', 'hover:bg-zinc-900/70', 'shadow-sm');
+            card.classList.add('border-lime-500', 'bg-lime-950/40', 'glow-green', 'shadow-md', 'ring-1', 'ring-lime-400/40');
+            badge?.classList.remove('bg-zinc-800/80', 'text-zinc-300', 'border-zinc-700');
+            badge?.classList.add('bg-lime-900/80', 'text-lime-300', 'border-lime-500/50');
+          } else {
+            card.classList.remove('border-lime-500', 'bg-lime-950/40', 'glow-green', 'shadow-md', 'ring-1', 'ring-lime-400/40');
+            card.classList.add('border-zinc-800', 'bg-zinc-900/40', 'hover:bg-zinc-900/70', 'shadow-sm');
+            badge?.classList.remove('bg-lime-900/80', 'text-lime-300', 'border-lime-500/50');
+            badge?.classList.add('bg-zinc-800/80', 'text-zinc-300', 'border-zinc-700');
+          }
+        });
 
-      jukeboxPill?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        soundEngine.playClick();
-        switchTrack();
-      });
+        const cfg = GLASS_CONFIG[selectedGlassSize];
+        if (ctaBtnText) {
+          ctaBtnText.textContent = `Pour ${cfg.name} Glass (${cfg.amount}) — Fill! 🥤`;
+        }
+      }
 
-      jbNextBtn?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        soundEngine.playClick();
-        switchTrack();
+      glassSizeCards.forEach((card) => {
+        card.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const size = card.getAttribute('data-size') as GlassSize;
+          if (size && GLASS_CONFIG[size]) {
+            selectedGlassSize = size;
+            currentCapacity = GLASS_CONFIG[size].amount;
+            soundEngine.playClick();
+            updateGlassSizeUI();
+          }
+        });
       });
 
       // Flavor selection in menu
@@ -901,7 +1148,15 @@ import '../styles/global.css';
           this.glassTx2 = w - this.glassTx1;
           this.glassBx1 = (w - bottomW) / 2;
           this.glassBx2 = w - this.glassBx1;
-          this.topRimY = 115;
+
+          // Adjust tumbler height based on selected glass size (Small: 20, Medium: 40, Large: 50)
+          if (selectedGlassSize === 'small') {
+            this.topRimY = Math.max(130, h * 0.18);
+          } else if (selectedGlassSize === 'large') {
+            this.topRimY = Math.min(95, h * 0.10);
+          } else {
+            this.topRimY = 115;
+          }
 
           this.initNodes();
         }
@@ -1352,9 +1607,9 @@ import '../styles/global.css';
         // • Tilted back below 125° => STOP consumption immediately!
         // =========================================================
         if (sensorManager.isDrinking && liquidRenderer && !isFinished && liquidRenderer.targetJuiceLevel > 0) {
-          // Smooth continuous decrease while in upside-down position
-          // DRAIN_RATE = 0.18 (takes ~5.5s of continuous upside-down holding to empty full glass)
-          const DRAIN_RATE = 0.18;
+          // Continuous decrease scaled by selected glass size (Small 20, Medium 40, Large 50)
+          const cfg = GLASS_CONFIG[selectedGlassSize];
+          const DRAIN_RATE = cfg.drainRate;
           liquidRenderer.targetJuiceLevel = Math.max(0, liquidRenderer.targetJuiceLevel - DRAIN_RATE * dt);
 
           // Periodic gulp sound every 950ms while continuously drinking
@@ -1369,10 +1624,10 @@ import '../styles/global.css';
           // Spout overflow visual at top rim while pouring into mouth
           pourStreamLeft?.classList.remove('opacity-0');
 
-          // Live percentage display
-          const remainingPct = Math.round(liquidRenderer.targetJuiceLevel * 100);
-          if (sipCountBadge) sipCountBadge.textContent = `${remainingPct}%`;
-          if (sipCardTitle) sipCardTitle.textContent = 'Sipping... Pure Refreshment! 🥤';
+          // Live capacity units display (e.g. 40 / 40 down to 0 / 40)
+          const remainingUnits = Math.max(0, Math.round(liquidRenderer.targetJuiceLevel * currentCapacity));
+          if (sipCountBadge) sipCountBadge.textContent = `${remainingUnits} / ${currentCapacity}`;
+          if (sipCardTitle) sipCardTitle.textContent = `Sipping ${cfg.name} Glass... 🥤`;
           if (sipCardDesc) {
             sipCardDesc.textContent = 'Keep tilted to drink — lower phone to pause.';
           }
@@ -1383,20 +1638,21 @@ import '../styles/global.css';
             isFinished = true;
             soundEngine.playCheers();
             if (sipCardTitle) sipCardTitle.textContent = 'GLASS FINISHED! 🎉';
-            if (sipCardDesc) sipCardDesc.textContent = '100% Pure Refreshment ☀️ Ganna Baar!';
-            if (sipCountBadge) sipCountBadge.textContent = '0%';
+            if (sipCardDesc) sipCardDesc.textContent = `All ${currentCapacity} consumed! 100% Pure Refreshment ☀️ Ganna Baar!`;
+            if (sipCountBadge) sipCountBadge.textContent = `0 / ${currentCapacity}`;
             sipTapCard?.classList.add('hidden');
             finishReplayBtn?.classList.remove('hidden');
             finishReplayBtn?.classList.add('flex');
             pourStreamLeft?.classList.add('opacity-0');
-            showToast('🎉 Glass Finished! 100% pure refreshment!');
+            showToast(`🎉 ${cfg.name} Glass Finished! (${currentCapacity})`);
           }
         } else if (!isFinished && liquidRenderer) {
           // Normal movement / below threshold: Consumption is STOPPED immediately!
           pourStreamLeft?.classList.add('opacity-0');
           pourStreamRight?.classList.add('opacity-0');
 
-          if (sipCardTitle) sipCardTitle.textContent = 'Take a Sip — Pure Refreshment';
+          const cfg = GLASS_CONFIG[selectedGlassSize];
+          if (sipCardTitle) sipCardTitle.textContent = `Take a Sip — ${cfg.name} (${currentCapacity})`;
           if (sipCardDesc) {
             sipCardDesc.textContent = 'Hold phone like a real glass & tilt to drink, or tap the glass!';
           }
@@ -1421,20 +1677,22 @@ import '../styles/global.css';
       function takeManualSip() {
         if (isFinished || !liquidRenderer) return;
         soundEngine.playGulp();
-        liquidRenderer.targetJuiceLevel = Math.max(0, liquidRenderer.targetJuiceLevel - 0.25);
+        // Each manual tap sip drinks ~20% of the glass
+        liquidRenderer.targetJuiceLevel = Math.max(0, liquidRenderer.targetJuiceLevel - 0.20);
         liquidRenderer.splash(0.5, 12.0);
-        const remainingPct = Math.round(liquidRenderer.targetJuiceLevel * 100);
-        if (sipCountBadge) sipCountBadge.textContent = `${remainingPct}%`;
-        showToast(`🥤 Sipped! Remaining: ${remainingPct}%`);
+        const remainingUnits = Math.max(0, Math.round(liquidRenderer.targetJuiceLevel * currentCapacity));
+        if (sipCountBadge) sipCountBadge.textContent = `${remainingUnits} / ${currentCapacity}`;
+        showToast(`🥤 Sipped! Remaining: ${remainingUnits} / ${currentCapacity}`);
 
         if (liquidRenderer.targetJuiceLevel <= 0.005) {
           liquidRenderer.targetJuiceLevel = 0;
           liquidRenderer.juiceLevel = 0;
           isFinished = true;
           soundEngine.playCheers();
-          if (sipCardTitle) sipCardTitle.textContent = 'GLASS FINISHED! 🎉';
-          if (sipCardDesc) sipCardDesc.textContent = '100% Pure Refreshment ☀️ Ganna Baar!';
-          if (sipCountBadge) sipCountBadge.textContent = '0%';
+          const cfg = GLASS_CONFIG[selectedGlassSize];
+          if (sipCardTitle) sipCardTitle.textContent = `${cfg.name.toUpperCase()} GLASS FINISHED! 🎉`;
+          if (sipCardDesc) sipCardDesc.textContent = `All ${currentCapacity} consumed! 100% Pure Refreshment ☀️ Ganna Baar!`;
+          if (sipCountBadge) sipCountBadge.textContent = `0 / ${currentCapacity}`;
           sipTapCard?.classList.add('hidden');
           finishReplayBtn?.classList.remove('hidden');
           finishReplayBtn?.classList.add('flex');
@@ -1444,8 +1702,10 @@ import '../styles/global.css';
       function resetGlass() {
         isFinished = false;
         sensorManager.calibrate();
-        if (sipCountBadge) sipCountBadge.textContent = '100%';
-        if (sipCardTitle) sipCardTitle.textContent = 'Take a Sip — Pure Refreshment';
+        currentCapacity = GLASS_CONFIG[selectedGlassSize].amount;
+        const cfg = GLASS_CONFIG[selectedGlassSize];
+        if (sipCountBadge) sipCountBadge.textContent = `${currentCapacity} / ${currentCapacity}`;
+        if (sipCardTitle) sipCardTitle.textContent = `Take a Sip — ${cfg.name} (${currentCapacity})`;
         if (sipCardDesc) sipCardDesc.textContent = 'Hold phone like a real glass & tilt to drink, or tap the glass!';
         sipTapCard?.classList.remove('hidden');
         finishReplayBtn?.classList.add('hidden');
@@ -1558,8 +1818,9 @@ import '../styles/global.css';
         }
       });
 
-      // Initialize Menu View
+      // Initialize Menu View & Glass Size UI
       updateMenuUI();
+      updateGlassSizeUI();
     </script>
   </body>
 </html>
