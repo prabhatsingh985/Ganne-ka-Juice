@@ -48,7 +48,7 @@ import '../styles/global.css';
     <!-- Hidden YouTube Audio Host (Zero Visible UI, 100% Legal Embed) -->
     <div
       id="yt-audio-container"
-      class="fixed -top-[9999px] -left-[9999px] w-1 h-1 opacity-0 pointer-events-none overflow-hidden"
+      class="fixed bottom-0 right-0 w-8 h-8 opacity-[0.001] pointer-events-none overflow-hidden z-0"
       aria-hidden="true"
       tabindex="-1"
     >
@@ -105,7 +105,7 @@ import '../styles/global.css';
             aria-label="Switch Background Music"
           >
             <span class="text-xs text-lime-400">🔄</span>
-            <span id="lofi-text" class="text-[11px] font-medium text-zinc-200 max-w-[80px] sm:max-w-none truncate">Sugarcane Groove</span>
+            <span id="lofi-text" class="text-[11px] font-medium text-zinc-200 max-w-[80px] sm:max-w-none truncate">Ganne Ka Juice</span>
           </button>
 
           <!-- Mute / Unmute Button -->
@@ -133,7 +133,7 @@ import '../styles/global.css';
       </p>
 
       <!-- Preview Static Cutting Glass Graphic -->
-      <div class="relative w-40 sm:w-48 aspect-[3/4] my-4 flex items-center justify-center">
+      <div id="preview-glass-container" class="relative w-40 sm:w-48 aspect-[3/4] my-4 flex items-center justify-center transition-transform duration-300 ease-out origin-bottom">
         <div class="absolute -top-2 text-lg animate-float-slow opacity-80">🍋</div>
         <div class="absolute -bottom-1 -left-2 text-base animate-float-slow opacity-80" style="animation-delay: 1.5s;">🧊</div>
 
@@ -344,7 +344,7 @@ import '../styles/global.css';
       >
         <div class="text-[10px] text-right leading-tight pr-1.5 border-r border-zinc-800">
           <span class="text-[8px] text-amber-400 font-bold tracking-widest block">MUSIC</span>
-          <span id="jb-track-name" class="text-zinc-200 font-medium block max-w-[80px] truncate">Sugarcane Groove</span>
+          <span id="jb-track-name" class="text-zinc-200 font-medium block max-w-[80px] truncate">Ganne Ka Juice</span>
         </div>
         <!-- Play / Pause -->
         <button id="jb-play-pause-btn" type="button" class="text-xs hover:scale-110 active:scale-95 transition-all cursor-pointer p-0.5" title="Play / Pause">
@@ -412,12 +412,50 @@ import '../styles/global.css';
       let selectedFlavor: Flavor = 'saada';
       let isFinished = false;
 
-      // Glass sizes: Small (20), Medium (40), Large (50)
+      // Centralized Glass Configuration: Small (20), Medium (40), Large (50)
       type GlassSize = 'small' | 'medium' | 'large';
-      const GLASS_CONFIG: Record<GlassSize, { name: string; amount: number; icon: string; drainRate: number }> = {
-        small: { name: 'Small', amount: 20, icon: '🥃', drainRate: 0.22 },
-        medium: { name: 'Medium', amount: 40, icon: '🥛', drainRate: 0.17 },
-        large: { name: 'Large', amount: 50, icon: '🍹', drainRate: 0.14 },
+      interface GlassSpec {
+        name: string;
+        amount: number;
+        icon: string;
+        drainRate: number;
+        widthFactor: number;    // Glass top width as fraction of max container
+        topRimFraction: number; // Glass top rim Y as fraction of viewport height
+        bottomPad: number;      // Base thickness pad
+        previewScale: string;   // Preview scale for menu SVG
+      }
+
+      const GLASS_CONFIG: Record<GlassSize, GlassSpec> = {
+        small: {
+          name: 'Small',
+          amount: 20,
+          icon: '🥃',
+          drainRate: 0.22,
+          widthFactor: 0.62,       // Visibly smaller/narrower cutting tumbler
+          topRimFraction: 0.25,    // Visibly shorter height (starts 25% from top)
+          bottomPad: 46,
+          previewScale: 'scale(0.80)',
+        },
+        medium: {
+          name: 'Medium',
+          amount: 40,
+          icon: '🥛',
+          drainRate: 0.17,
+          widthFactor: 0.80,       // Standard cutting glass
+          topRimFraction: 0.14,    // Standard top rim (14% from top)
+          bottomPad: 58,
+          previewScale: 'scale(1.0)',
+        },
+        large: {
+          name: 'Large',
+          amount: 50,
+          icon: '🍹',
+          drainRate: 0.14,
+          widthFactor: 0.94,       // Wide, spacious, tall glass
+          topRimFraction: 0.07,    // Tall glass (starts 7% from top)
+          bottomPad: 68,
+          previewScale: 'scale(1.18)',
+        },
       };
       let selectedGlassSize: GlassSize = 'medium';
       let currentCapacity = GLASS_CONFIG.medium.amount; // 40
@@ -475,19 +513,20 @@ import '../styles/global.css';
       // 🔊 Mute / Unmute
       // =========================================================
       const YT_TRACKS = [
-        { id: 'zrzAbBTkFr8', title: 'Sugarcane Groove' },
+        { id: 'zrzAbBTkFr8', title: 'Ganne Ka Juice' },
         { id: 'h6fq7sbxwBg', title: 'Tapri Rhythm' },
       ];
       let currentTrackIdx = 0;
       let ytPlayer: any = null;
       let isYtReady = false;
+      let isAudioPlaying = false;
 
       type PlaybackState = 'playing' | 'paused' | 'stopped';
       let playbackState: PlaybackState = 'playing';
 
       function updateMusicUI() {
         const track = YT_TRACKS[currentTrackIdx];
-        const isPlaying = playbackState === 'playing';
+        const isPlaying = playbackState === 'playing' && isAudioPlaying;
 
         // Play/Pause icon sync
         if (menuPlayIcon) menuPlayIcon.textContent = isPlaying ? '⏸️' : '▶️';
@@ -507,11 +546,24 @@ import '../styles/global.css';
         }
       }
 
+      function attemptStartAudio() {
+        if (!ytPlayer || !isYtReady || playbackState !== 'playing') return;
+        try {
+          if (!soundEngine.getMuted()) {
+            ytPlayer.unMute();
+            ytPlayer.setVolume(35);
+          }
+          ytPlayer.playVideo();
+        } catch (e) {
+          console.warn('Playback start attempt:', e);
+        }
+      }
+
       function playOrResumeMusic() {
+        playbackState = 'playing';
         if (ytPlayer && isYtReady) {
           try {
-            if (playbackState === 'stopped') {
-              // Resuming after a complete stop starts from the beginning (0s)
+            if (ytPlayer.getPlayerState?.() === (window as any).YT?.PlayerState?.ENDED) {
               ytPlayer.seekTo(0, true);
             }
             if (!soundEngine.getMuted()) {
@@ -523,13 +575,13 @@ import '../styles/global.css';
             console.warn('Play error:', e);
           }
         }
-        const wasPaused = playbackState === 'paused';
-        playbackState = 'playing';
         updateMusicUI();
-        showToast(wasPaused ? '▶️ Music Resumed' : '▶️ Music Playing');
+        showToast(`▶️ Music Playing: ${YT_TRACKS[currentTrackIdx].title}`);
       }
 
       function pauseMusic() {
+        playbackState = 'paused';
+        isAudioPlaying = false;
         if (ytPlayer && isYtReady) {
           try {
             ytPlayer.pauseVideo(); // Freezes at exact current timestamp!
@@ -537,13 +589,12 @@ import '../styles/global.css';
             console.warn('Pause error:', e);
           }
         }
-        playbackState = 'paused';
         updateMusicUI();
         showToast('⏸️ Music Paused');
       }
 
       function togglePlayPause() {
-        if (playbackState === 'playing') {
+        if (playbackState === 'playing' && isAudioPlaying) {
           pauseMusic();
         } else {
           playOrResumeMusic();
@@ -551,6 +602,8 @@ import '../styles/global.css';
       }
 
       function stopMusic() {
+        playbackState = 'stopped';
+        isAudioPlaying = false;
         if (ytPlayer && isYtReady) {
           try {
             ytPlayer.seekTo(0, true); // Reset position to beginning!
@@ -559,7 +612,6 @@ import '../styles/global.css';
             console.warn('Stop error:', e);
           }
         }
-        playbackState = 'stopped';
         updateMusicUI();
         showToast('⏹️ Music Stopped (Reset to 0:00)');
       }
@@ -608,17 +660,17 @@ import '../styles/global.css';
         }
       }
 
-      // Initialize YouTube IFrame Player
+      // Initialize YouTube IFrame Player (Defaults to Track 0: Ganne Ka Juice)
       (window as any).onYouTubeIframeAPIReady = () => {
         try {
           ytPlayer = new (window as any).YT.Player('yt-player', {
-            height: '1',
-            width: '1',
-            videoId: YT_TRACKS[currentTrackIdx].id,
+            height: '100',
+            width: '100',
+            videoId: YT_TRACKS[0].id,
             playerVars: {
               autoplay: 1,
               loop: 1,
-              playlist: YT_TRACKS[currentTrackIdx].id,
+              playlist: YT_TRACKS[0].id,
               controls: 0,
               showinfo: 0,
               rel: 0,
@@ -631,16 +683,23 @@ import '../styles/global.css';
               onReady: (e: any) => {
                 isYtReady = true;
                 e.target.setVolume(35);
-                if (!soundEngine.getMuted() && playbackState === 'playing') {
+                if (!soundEngine.getMuted()) {
                   e.target.unMute();
-                  e.target.playVideo();
-                } else {
-                  e.target.mute();
                 }
+                // Attempt autoplay immediately
+                attemptStartAudio();
                 updateMusicUI();
               },
               onStateChange: (e: any) => {
-                if (e.data === (window as any).YT?.PlayerState?.ENDED) {
+                const YT = (window as any).YT;
+                if (e.data === YT?.PlayerState?.PLAYING) {
+                  isAudioPlaying = true;
+                  detachGlobalUnlockListeners();
+                  updateMusicUI();
+                } else if (e.data === YT?.PlayerState?.PAUSED) {
+                  isAudioPlaying = false;
+                  updateMusicUI();
+                } else if (e.data === YT?.PlayerState?.ENDED) {
                   if (playbackState === 'playing') {
                     ytPlayer?.playVideo();
                   }
@@ -661,20 +720,31 @@ import '../styles/global.css';
         firstScriptTag?.parentNode?.insertBefore(tag, firstScriptTag);
       }
 
-      // Autoplay fallback: if blocked on initial page load, start on very first user interaction anywhere
-      const firstInteractionEvents = ['pointerdown', 'touchstart', 'click', 'keydown'];
-      const handleFirstAudioUnlock = () => {
-        if (ytPlayer && isYtReady && !soundEngine.getMuted() && playbackState === 'playing') {
-          try {
-            ytPlayer.unMute();
-            ytPlayer.setVolume(35);
-            ytPlayer.playVideo();
-            updateMusicUI();
-          } catch {}
+      // Persistent Autoplay Unlock: Keeps listening until audio ACTUALLY starts playing!
+      // Never detaches prematurely before YouTube API is ready.
+      // Uses capture: true to catch the first tap/click even if a child element calls stopPropagation().
+      const unlockEvents = ['pointerdown', 'touchstart', 'click', 'keydown'];
+      const handleUserInteractionUnlock = () => {
+        if (playbackState === 'playing' && !isAudioPlaying) {
+          attemptStartAudio();
         }
-        firstInteractionEvents.forEach((evt) => window.removeEventListener(evt, handleFirstAudioUnlock));
       };
-      firstInteractionEvents.forEach((evt) => window.addEventListener(evt, handleFirstAudioUnlock, { passive: true }));
+
+      function attachGlobalUnlockListeners() {
+        unlockEvents.forEach((evt) => {
+          window.addEventListener(evt, handleUserInteractionUnlock, { capture: true, passive: true });
+          document.addEventListener(evt, handleUserInteractionUnlock, { capture: true, passive: true });
+        });
+      }
+
+      function detachGlobalUnlockListeners() {
+        unlockEvents.forEach((evt) => {
+          window.removeEventListener(evt, handleUserInteractionUnlock, { capture: true } as any);
+          document.removeEventListener(evt, handleUserInteractionUnlock, { capture: true } as any);
+        });
+      }
+
+      attachGlobalUnlockListeners();
 
       function showToast(msg: string) {
         const toast = document.getElementById('app-toast');
@@ -770,6 +840,17 @@ import '../styles/global.css';
         const cfg = GLASS_CONFIG[selectedGlassSize];
         if (ctaBtnText) {
           ctaBtnText.textContent = `Pour ${cfg.name} Glass (${cfg.amount}) — Fill! 🥤`;
+        }
+
+        // Visibly scale preview glass on menu
+        const previewContainer = document.getElementById('preview-glass-container');
+        if (previewContainer) {
+          previewContainer.style.transform = cfg.previewScale;
+        }
+
+        // Dynamically re-scale canvas glass and fluid physics boundaries!
+        if (liquidRenderer) {
+          liquidRenderer.resize();
         }
       }
 
@@ -1141,34 +1222,31 @@ import '../styles/global.css';
           this.ctx.resetTransform();
           this.ctx.scale(dpr, dpr);
 
-          // Glass geometry: 88% width at top, 62% width at bottom
-          const topW = Math.min(w * 0.88, 480);
-          const bottomW = Math.min(w * 0.62, 340);
+          // Centralized physical glass dimensions based on selected price / size:
+          const cfg = GLASS_CONFIG[selectedGlassSize];
+          const maxW = Math.min(w, 520);
+          const topW = Math.round(maxW * cfg.widthFactor);
+          const bottomW = Math.round(topW * 0.70);
+
           this.glassTx1 = (w - topW) / 2;
           this.glassTx2 = w - this.glassTx1;
           this.glassBx1 = (w - bottomW) / 2;
           this.glassBx2 = w - this.glassBx1;
 
-          // Adjust tumbler height based on selected glass size (Small: 20, Medium: 40, Large: 50)
-          if (selectedGlassSize === 'small') {
-            this.topRimY = Math.max(130, h * 0.18);
-          } else if (selectedGlassSize === 'large') {
-            this.topRimY = Math.min(95, h * 0.10);
-          } else {
-            this.topRimY = 115;
-          }
+          this.topRimY = Math.round(h * cfg.topRimFraction);
+          this.glassBottomPad = cfg.bottomPad;
 
           this.initNodes();
         }
 
         public initNodes() {
           this.nodes = [];
-          const w = window.innerWidth;
           const baseSurfaceY = this.topRimY + 45;
+          const glassW = this.glassTx2 - this.glassTx1;
 
           for (let i = 0; i < this.nodeCount; i++) {
             this.nodes.push({
-              x: (w / (this.nodeCount - 1)) * i,
+              x: this.glassTx1 + (glassW / (this.nodeCount - 1)) * i,
               y: baseSurfaceY,
               targetY: baseSurfaceY,
               vy: 0,
@@ -1215,15 +1293,14 @@ import '../styles/global.css';
 
         public update(roll: number, dt: number) {
           dt = Math.min(dt, 0.1);
-          const w = window.innerWidth;
           const h = window.innerHeight;
 
           // Smooth liquid drainage level
           const juiceLerp = 1 - Math.pow(0.08, dt * 60);
           this.juiceLevel += (this.targetJuiceLevel - this.juiceLevel) * juiceLerp;
 
-          // Responsive tilt tracking with fluid momentum
-          const tiltDamping = 1 - Math.pow(0.35, dt * 60);
+          // Responsive tilt tracking with smooth, stable fluid momentum
+          const tiltDamping = 1 - Math.pow(0.20, dt * 60);
           this.tiltAngle += (roll - this.tiltAngle) * tiltDamping;
 
           // Equilibrium line
@@ -1233,17 +1310,17 @@ import '../styles/global.css';
           const currentBaseY = fullY + (emptyY - fullY) * (1 - this.juiceLevel);
 
           // Clamped tilt slope:
-          // Negative roll (phone tilted left) => liquid rises on the left side of screen
-          const clampedTilt = Math.max(-0.75, Math.min(0.75, this.tiltAngle));
+          const clampedTilt = Math.max(-0.50, Math.min(0.50, this.tiltAngle));
           const slope = -Math.tan(clampedTilt);
-          const centerX = w / 2;
+          const glassW = this.glassTx2 - this.glassTx1;
+          const centerX = (this.glassTx1 + this.glassTx2) / 2;
 
-          // 1. Spring force & damping per node (snappy fluid following + wave ripples)
+          // 1. Spring force & damping per node bounded strictly within the glass width
           const stiffness = 0.055;
           const damp = 0.095;
           for (let i = 0; i < this.nodeCount; i++) {
             const node = this.nodes[i];
-            node.x = (w / (this.nodeCount - 1)) * i;
+            node.x = this.glassTx1 + (glassW / (this.nodeCount - 1)) * i;
             const targetFromTilt = currentBaseY + slope * (node.x - centerX);
             node.targetY = Math.max(this.topRimY, Math.min(emptyY + 20, targetFromTilt));
 
@@ -1323,9 +1400,9 @@ import '../styles/global.css';
           if (this.juiceLevel > 0.02 && this.nodes.length >= 2) {
             ctx.save();
             ctx.beginPath();
-            ctx.moveTo(0, h);
-            ctx.lineTo(w, h);
-            ctx.lineTo(w, this.nodes[this.nodeCount - 1].y);
+            ctx.moveTo(this.glassBx1, bottomY);
+            ctx.lineTo(this.glassBx2, bottomY);
+            ctx.lineTo(this.nodes[this.nodeCount - 1].x, this.nodes[this.nodeCount - 1].y);
 
             // Smooth quadratic curve along surface
             for (let i = this.nodeCount - 1; i > 0; i--) {
@@ -1335,7 +1412,7 @@ import '../styles/global.css';
               const my = (p0.y + p1.y) / 2;
               ctx.quadraticCurveTo(p0.x, p0.y, mx, my);
             }
-            ctx.lineTo(0, this.nodes[0].y);
+            ctx.lineTo(this.nodes[0].x, this.nodes[0].y);
             ctx.closePath();
 
             // Sugarcane Flavor Gradient
@@ -1364,7 +1441,8 @@ import '../styles/global.css';
             ctx.fillStyle = 'rgba(255, 255, 230, 0.7)';
             for (let i = 0; i < this.bubbles.length; i++) {
               const b = this.bubbles[i];
-              const absX = b.x * w + Math.sin(b.wobble) * 6;
+              const glassW = this.glassTx2 - this.glassTx1;
+              const absX = this.glassTx1 + b.x * glassW + Math.sin(b.wobble) * 6;
               const absY = b.y * h;
               const nodeIdx = Math.max(0, Math.min(this.nodeCount - 1, Math.floor(b.x * (this.nodeCount - 1))));
               const surfaceY = this.nodes[nodeIdx] ? this.nodes[nodeIdx].y : meanY;
@@ -1425,7 +1503,7 @@ import '../styles/global.css';
             // 6. Creamy Sugarcane Froth (Foam Ribbon / Jhag)
             const frothH = 13;
             ctx.beginPath();
-            ctx.moveTo(0, this.nodes[0].y);
+            ctx.moveTo(this.nodes[0].x, this.nodes[0].y);
             for (let i = 1; i < this.nodeCount; i++) {
               const p0 = this.nodes[i - 1];
               const p1 = this.nodes[i];
@@ -1433,7 +1511,7 @@ import '../styles/global.css';
               const my = (p0.y + p1.y) / 2;
               ctx.quadraticCurveTo(p0.x, p0.y, mx, my);
             }
-            ctx.lineTo(w, this.nodes[this.nodeCount - 1].y + frothH);
+            ctx.lineTo(this.nodes[this.nodeCount - 1].x, this.nodes[this.nodeCount - 1].y + frothH);
 
             for (let i = this.nodeCount - 1; i > 0; i--) {
               const p0 = this.nodes[i];
@@ -1442,7 +1520,7 @@ import '../styles/global.css';
               const my = ((p0.y + p1.y) / 2) + frothH;
               ctx.quadraticCurveTo(p0.x, p0.y + frothH, mx, my);
             }
-            ctx.lineTo(0, this.nodes[0].y + frothH);
+            ctx.lineTo(this.nodes[0].x, this.nodes[0].y + frothH);
             ctx.closePath();
 
             const frothGrad = ctx.createLinearGradient(0, meanY - 4, 0, meanY + frothH + 4);
@@ -1592,8 +1670,23 @@ import '../styles/global.css';
         // 1. GYROSCOPE ORIENTATION CONTROLS FLUID SLOSHING & WAVES
         // Normal movement, slight tilt (10°, 20°, 30°, 45°), rotating, shaking
         // continuously drives realistic fluid surface physics WITHOUT consuming juice.
+        //
+        // HORIZONTAL DAMPING & SENSITIVITY REDUCTION:
+        // Configurable multiplier to make side-to-side movement feel stable,
+        // natural, and not twitchy, while preserving upside-down drinking detection!
         // =========================================================
-        const rollRad = (sensorManager.calculatedTiltX * Math.PI) / 180;
+        const HORIZONTAL_SENSITIVITY = 0.35;  // Tuned lower value: tiny hand movement -> small natural wave
+        const HORIZONTAL_DEADBAND_DEG = 1.2;  // Filters out micro tremors / hand jitter under 1.2°
+
+        let rawTiltX = sensorManager.calculatedTiltX;
+        if (Math.abs(rawTiltX) < HORIZONTAL_DEADBAND_DEG) {
+          rawTiltX = 0;
+        } else {
+          rawTiltX = (rawTiltX > 0 ? 1 : -1) * (Math.abs(rawTiltX) - HORIZONTAL_DEADBAND_DEG);
+        }
+
+        const dampedTiltX = rawTiltX * HORIZONTAL_SENSITIVITY;
+        const rollRad = (dampedTiltX * Math.PI) / 180;
 
         if (liquidRenderer) {
           liquidRenderer.update(rollRad, dt);
@@ -1738,6 +1831,7 @@ import '../styles/global.css';
       // Transition from Menu to Full-Screen Drinking View
       openGlassBtn?.addEventListener('click', (e) => {
         e.stopPropagation();
+        attemptStartAudio();
         sensorManager.requestAccess();
         sensorManager.calibrate();
         soundEngine.playClick();
